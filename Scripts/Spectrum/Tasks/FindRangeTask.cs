@@ -1,80 +1,56 @@
-﻿using UnityEngine;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections;
-using System;
-
-using Ceto.Common.Threading.Tasks;
 using Ceto.Common.Containers.Interpolation;
+using Ceto.Common.Threading.Tasks;
+using UnityEngine;
 
 namespace Ceto
 {
-	
-	public class FindRangeTask : ThreadedTask
-	{
+  public class FindRangeTask : ThreadedTask
+  {
+    private readonly IList<InterpolatedArray2f> m_displacements;
 
-		IList<InterpolatedArray2f> m_displacements;
+    private readonly WaveSpectrum m_spectrum;
+    private Vector4 m_choppyness;
 
-		WaveSpectrum m_spectrum;
+    private Vector2 m_gridScale;
 
-		Vector4 m_max;
+    private Vector4 m_max;
 
-		Vector4 m_choppyness;
+    public FindRangeTask(WaveSpectrum spectrum) : base(true)
+    {
+      m_spectrum = spectrum;
+      m_choppyness = spectrum.Choppyness;
+      m_gridScale = new Vector2(spectrum.gridScale, spectrum.gridScale);
 
-		Vector2 m_gridScale;
+      var buffer = spectrum.DisplacementBuffer;
+      buffer.CopyAndCreateDisplacements(out m_displacements);
+    }
 
-		public FindRangeTask(WaveSpectrum spectrum) : base(true)
-		{
+    public override void Reset()
+    {
+      base.Reset();
 
-			m_spectrum = spectrum;
-			m_choppyness = spectrum.Choppyness;
-			m_gridScale = new Vector2(spectrum.gridScale, spectrum.gridScale);
+      m_choppyness = m_spectrum.Choppyness;
+      m_gridScale = new Vector2(m_spectrum.gridScale, m_spectrum.gridScale);
 
-			IDisplacementBuffer buffer = spectrum.DisplacementBuffer;
-			buffer.CopyAndCreateDisplacements(out m_displacements);
+      var buffer = m_spectrum.DisplacementBuffer;
+      buffer.CopyDisplacements(m_displacements);
+    }
 
-		}
+    public override IEnumerator Run()
+    {
+      m_max = QueryDisplacements.MaxRange(m_displacements, m_choppyness, m_gridScale, this);
 
-		public override void Reset()
-		{
+      FinishedRunning();
+      return null;
+    }
 
-			base.Reset();
+    public override void End()
+    {
+      m_spectrum.MaxDisplacement = new Vector2(Mathf.Max(m_max.x, m_max.z), m_max.y);
 
-			m_choppyness = m_spectrum.Choppyness;
-			m_gridScale = new Vector2(m_spectrum.gridScale, m_spectrum.gridScale);
-
-            IDisplacementBuffer buffer = m_spectrum.DisplacementBuffer;
-			buffer.CopyDisplacements(m_displacements);
-
-		}
-
-		public override IEnumerator Run()
-		{
-
-			m_max = QueryDisplacements.MaxRange(m_displacements, m_choppyness, m_gridScale, this);
-
-			FinishedRunning();
-			return null;
-		}
-
-		public override void End ()
-		{
-
-			m_spectrum.MaxDisplacement = new Vector2(Mathf.Max(m_max.x, m_max.z), m_max.y);
-
-			base.End();
-
-		}
-
-	}
-
+      base.End();
+    }
+  }
 }
-
-
-
-
-
-
-
-
-
-

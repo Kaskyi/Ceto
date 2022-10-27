@@ -1,20 +1,16 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace Ceto
 {
+  /// <summary>
+  ///   The default implementation.
+  ///   Just uses Unitys time.
+  /// </summary>
+  public class OceanTime : IOceanTime
+  {
     /// <summary>
-    /// The default implementation.
-    /// Just uses Unitys time.
+    ///   The current time in seconds.
     /// </summary>
-	public class OceanTime : IOceanTime
-	{
-
-        /// <summary>
-        /// The current time in seconds. 
-        /// </summary>
-		public float Now { get { return Time.time; } }
-		
-	}
-	
+    public float Now => Time.time;
+  }
 }

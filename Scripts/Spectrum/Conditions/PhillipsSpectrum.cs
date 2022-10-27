@@ -1,66 +1,57 @@
 ﻿using UnityEngine;
-using System;
 
 namespace Ceto
 {
-	
-	/// <summary>
-	/// 
-	/// </summary>
-	public class PhillipsSpectrum : ISpectrum
-	{
+  /// <summary>
+  /// </summary>
+  public class PhillipsSpectrum : ISpectrum
+  {
+    private readonly float AMP = 0.02f;
 
-        readonly float GRAVITY = SpectrumTask.GRAVITY;
+    private readonly float GRAVITY = SpectrumTask.GRAVITY;
 
-        readonly float AMP = 0.02f;
+    private readonly float length2, dampedLength2;
 
-        readonly float WindSpeed;
+    private readonly Vector2 WindDir;
 
-        readonly Vector2 WindDir;
+    private readonly float WindSpeed;
 
-        readonly float length2, dampedLength2;
+    public PhillipsSpectrum(float windSpeed, float windDir)
+    {
+      WindSpeed = windSpeed;
 
-		public PhillipsSpectrum(float windSpeed, float windDir)
-		{
-            WindSpeed = windSpeed;
+      var theta = windDir * Mathf.PI / 180.0f;
+      WindDir = new Vector2(Mathf.Cos(theta), Mathf.Sin(theta));
 
-            float theta = windDir * Mathf.PI / 180.0f;
-            WindDir = new Vector2(Mathf.Cos(theta), Mathf.Sin(theta));
+      var L = WindSpeed * WindSpeed / GRAVITY;
+      length2 = L * L;
 
-            float L = WindSpeed * WindSpeed / GRAVITY;
-            length2 = L * L;
+      var damping = 0.001f;
+      dampedLength2 = length2 * damping * damping;
+    }
 
-            float damping = 0.001f;
-            dampedLength2 = length2 * damping * damping;
+    public float Spectrum(float kx, float kz)
+    {
+      var u = kx * WindDir.x - kz * WindDir.y;
+      var v = kx * WindDir.y + kz * WindDir.x;
 
-        }
-		
-		public float Spectrum(float kx, float kz)
-		{
+      kx = u;
+      kz = v;
 
-            float u = kx * WindDir.x - kz * WindDir.y;
-            float v = kx * WindDir.y + kz * WindDir.x;
+      var k_length = Mathf.Sqrt(kx * kx + kz * kz);
+      if (k_length < 0.000001f) return 0.0f;
 
-            kx = u;
-            kz = v;
+      var k_length2 = k_length * k_length;
+      var k_length4 = k_length2 * k_length2;
 
-            float k_length = Mathf.Sqrt(kx * kx + kz * kz);
-			if (k_length < 0.000001f) return 0.0f;
-			
-			float k_length2 = k_length * k_length;
-			float k_length4 = k_length2 * k_length2;
-			
-			kx /= k_length;
-			kz /= k_length;
+      kx /= k_length;
+      kz /= k_length;
 
-            float k_dot_w = kx * 1.0f + kz * 0.0f;
-            float k_dot_w2 = k_dot_w * k_dot_w * k_dot_w * k_dot_w * k_dot_w * k_dot_w;
+      var k_dot_w = kx * 1.0f + kz * 0.0f;
+      var k_dot_w2 = k_dot_w * k_dot_w * k_dot_w * k_dot_w * k_dot_w * k_dot_w;
 
-            return AMP * Mathf.Exp(-1.0f / (k_length2 * length2)) / k_length4 * k_dot_w2 * Mathf.Exp(-k_length2 * dampedLength2);
-			
-		}
-		
-		
-	}
-	
+      return AMP * Mathf.Exp(-1.0f / (k_length2 * length2)) / k_length4 * k_dot_w2 *
+             Mathf.Exp(-k_length2 * dampedLength2);
+    }
+  }
 }

@@ -1,138 +1,104 @@
-﻿using UnityEngine;
-using System;
-using System.Collections.Generic;
-
-using Ceto.Common.Threading.Scheduling;
+﻿using System.Collections.Generic;
 using Ceto.Common.Containers.Interpolation;
+using Ceto.Common.Threading.Scheduling;
+using UnityEngine;
 
 namespace Ceto
 {
+  public class DisplacementBufferCPU : WaveSpectrumBufferCPU, IDisplacementBuffer
+  {
+    private const int NUM_BUFFERS = 3;
 
-	public class DisplacementBufferCPU : WaveSpectrumBufferCPU, IDisplacementBuffer
-	{
-		
-		const int NUM_BUFFERS = 3;
+    private readonly IList<InterpolatedArray2f[]> m_displacements;
 
-		IList<InterpolatedArray2f[]> m_displacements;
+    public DisplacementBufferCPU(int size, Scheduler scheduler) : base(size, NUM_BUFFERS, scheduler)
+    {
+      var GRIDS = QueryDisplacements.GRIDS;
+      var CHANNELS = QueryDisplacements.CHANNELS;
 
-		public DisplacementBufferCPU(int size, Scheduler scheduler) : base(size, NUM_BUFFERS, scheduler)
-		{
+      m_displacements = new List<InterpolatedArray2f[]>(2);
 
-			int GRIDS = QueryDisplacements.GRIDS;
-			int CHANNELS = QueryDisplacements.CHANNELS;
+      m_displacements.Add(new InterpolatedArray2f[GRIDS]);
+      m_displacements.Add(new InterpolatedArray2f[GRIDS]);
 
-			m_displacements = new List<InterpolatedArray2f[]>(2);
+      for (var i = 0; i < GRIDS; i++)
+      {
+        m_displacements[0][i] = new InterpolatedArray2f(size, size, CHANNELS, true);
+        m_displacements[1][i] = new InterpolatedArray2f(size, size, CHANNELS, true);
+      }
+    }
 
-			m_displacements.Add( new InterpolatedArray2f[GRIDS] );
-			m_displacements.Add( new InterpolatedArray2f[GRIDS] );
+    public InterpolatedArray2f[] GetReadDisplacements()
+    {
+      return m_displacements[READ];
+    }
 
-			for (int i = 0; i < GRIDS; i++)
-			{
-				m_displacements[0][i] = new InterpolatedArray2f(size, size, CHANNELS, true);
-				m_displacements[1][i] = new InterpolatedArray2f(size, size, CHANNELS, true);
-			}
+    public void CopyAndCreateDisplacements(out IList<InterpolatedArray2f> displacements)
+    {
+      //Debug.Log("Copy and create");
 
-		}
+      var source = GetReadDisplacements();
+      QueryDisplacements.CopyAndCreateDisplacements(source, out displacements);
+    }
 
-		protected override void Initilize(WaveSpectrumCondition condition, float time)
-		{
+    public void CopyDisplacements(IList<InterpolatedArray2f> displacements)
+    {
+      var source = GetReadDisplacements();
+      QueryDisplacements.CopyDisplacements(source, displacements);
+    }
 
-			InterpolatedArray2f[] displacements = GetWriteDisplacements();
+    public Vector4 MaxRange(Vector4 choppyness, Vector2 gridScale)
+    {
+      var displacements = GetReadDisplacements();
 
-			displacements[0].Clear();
-			displacements[1].Clear();
-			displacements[2].Clear();
-			displacements[3].Clear();
+      return QueryDisplacements.MaxRange(displacements, choppyness, gridScale, null);
+    }
 
-            if (m_initTask == null)
-            {
-                m_initTask = condition.GetInitSpectrumDisplacementsTask(this, time);
-            }
-            else if(m_initTask.SpectrumType != condition.Key.SpectrumType || m_initTask.NumGrids != condition.Key.NumGrids)
-            {
-                m_initTask = condition.GetInitSpectrumDisplacementsTask(this, time);
-            }
-            else
-            {
-                m_initTask.Reset(condition, time);
-            }
-			
-		}
+    public void QueryWaves(WaveQuery query, QueryGridScaling scaling)
+    {
+      var enabled = EnabledBuffers();
 
-        public InterpolatedArray2f[] GetWriteDisplacements()
-		{
-			return m_displacements[WRITE];
-		}
+      //If no buffers are enabled there is nothing to sample.
+      if (enabled == 0) return;
 
-		public InterpolatedArray2f[] GetReadDisplacements()
-		{
-			return m_displacements[READ];
-		}
+      var displacements = GetReadDisplacements();
 
-		public override void Run(WaveSpectrumCondition condition, float time)
-		{
-			SwapDisplacements();
-			base.Run(condition, time);
-		}
+      QueryDisplacements.QueryWaves(query, enabled, displacements, scaling);
+    }
 
-		public void CopyAndCreateDisplacements(out IList<InterpolatedArray2f> displacements)
-		{
-            //Debug.Log("Copy and create");
+    protected override void Initilize(WaveSpectrumCondition condition, float time)
+    {
+      var displacements = GetWriteDisplacements();
 
-			InterpolatedArray2f[] source = GetReadDisplacements();
-			QueryDisplacements.CopyAndCreateDisplacements(source, out displacements);
+      displacements[0].Clear();
+      displacements[1].Clear();
+      displacements[2].Clear();
+      displacements[3].Clear();
 
-        }
+      if (m_initTask == null)
+        m_initTask = condition.GetInitSpectrumDisplacementsTask(this, time);
+      else if (m_initTask.SpectrumType != condition.Key.SpectrumType || m_initTask.NumGrids != condition.Key.NumGrids)
+        m_initTask = condition.GetInitSpectrumDisplacementsTask(this, time);
+      else
+        m_initTask.Reset(condition, time);
+    }
 
-		public void CopyDisplacements(IList<InterpolatedArray2f> displacements)
-		{
-			InterpolatedArray2f[] source = GetReadDisplacements();
-			QueryDisplacements.CopyDisplacements(source, displacements);
-		}
+    public InterpolatedArray2f[] GetWriteDisplacements()
+    {
+      return m_displacements[WRITE];
+    }
 
-		void SwapDisplacements()
-		{
+    public override void Run(WaveSpectrumCondition condition, float time)
+    {
+      SwapDisplacements();
+      base.Run(condition, time);
+    }
 
-			InterpolatedArray2f[] tmp = m_displacements[0];
-			m_displacements[0] = m_displacements[1];
-			m_displacements[1] = tmp;
-
-		}
-
-        public Vector4 MaxRange(Vector4 choppyness, Vector2 gridScale)
-		{
-
-			InterpolatedArray2f[] displacements = GetReadDisplacements();
-
-			return QueryDisplacements.MaxRange(displacements, choppyness, gridScale, null);
-
-		}
-
-		public void QueryWaves(WaveQuery query, QueryGridScaling scaling)
-		{
-
-			int enabled = EnabledBuffers();
-
-			//If no buffers are enabled there is nothing to sample.
-			if(enabled == 0) return;
-
-			InterpolatedArray2f[] displacements = GetReadDisplacements();
-			
-			QueryDisplacements.QueryWaves(query, enabled, displacements, scaling);
-			
-		}
-
-	}
-
+    private void SwapDisplacements()
+    {
+      var tmp = m_displacements[0];
+      m_displacements[0] = m_displacements[1];
+      m_displacements[1] = tmp;
+    }
+  }
 }
-
-
-
-
-
-
-
-
-
-
-

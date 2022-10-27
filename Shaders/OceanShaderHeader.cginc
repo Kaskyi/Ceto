@@ -88,7 +88,7 @@ sampler2D Ceto_Overlay_NormalMap, Ceto_Overlay_HeightMap, Ceto_Overlay_FoamMap, 
 
 float4x4 Ceto_Interpolation;
 float4x4 Ceto_ProjectorVP;
-float4  Ceto_GridSizes;
+float4 Ceto_GridSizes;
 float4 Ceto_Choppyness;
 float2 Ceto_GridScale;
 float2 Ceto_ScreenGridSize;

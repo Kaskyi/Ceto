@@ -2,27 +2,21 @@
 #define UNITY_540_OR_HIGHER
 #endif
 
-using UnityEngine;
 // using UnityEngine.VR;
-using System.Collections;
 
 namespace Ceto
 {
+  public static class OceanVR
+  {
+    public static bool OpenVRInUse { get; private set; }
 
-    public static class OceanVR
+
+    public static void Initialize()
     {
-
-        public static bool OpenVRInUse { get; private set; }
-
-
-        public static void Initialize()
-        {
-
 #if UNITY_540_OR_HIGHER && CETO_USE_STEAM_VR
             OpenVRInUse = VRSettings.loadedDeviceName == "OpenVR";
 #endif
-
-        }
+    }
 
 #if UNITY_540_OR_HIGHER && CETO_USE_STEAM_VR
         public static void GetSteamVRLeftEye(Camera cam, out Vector3 position, out Quaternion rotation, out Matrix4x4 projection)
@@ -55,7 +49,8 @@ namespace Ceto
 
         static Matrix4x4 GetSteamVRProjectionMatrix(Camera cam, Valve.VR.EVREye eye)
         {
-            Valve.VR.HmdMatrix44_t proj = SteamVR.instance.hmd.GetProjectionMatrix(eye, cam.nearClipPlane, cam.farClipPlane, SteamVR.instance.graphicsAPI);
+            Valve.VR.HmdMatrix44_t proj =
+ SteamVR.instance.hmd.GetProjectionMatrix(eye, cam.nearClipPlane, cam.farClipPlane, SteamVR.instance.graphicsAPI);
             Matrix4x4 m = new Matrix4x4();
             m.m00 = proj.m0;
             m.m01 = proj.m1;
@@ -76,8 +71,5 @@ namespace Ceto
             return m;
         }
 #endif
-
-    }
-
+  }
 }
-

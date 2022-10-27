@@ -1,12 +1,7 @@
-﻿
-using System;
-
-namespace Ceto.Common.Threading.Tasks
+﻿namespace Ceto.Common.Threading.Tasks
 {
-    public interface ICancelToken
-    {
-
-        bool Cancelled { get;  }
-
-    }
+  public interface ICancelToken
+  {
+    bool Cancelled { get; }
+  }
 }

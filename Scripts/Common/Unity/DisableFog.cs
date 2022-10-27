@@ -1,29 +1,24 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace Ceto.Common.Unity.Utility
 {
+  public class DisableFog : MonoBehaviour
+  {
+    private bool revertFogState;
 
-	public class DisableFog : MonoBehaviour 
-	{
+    private void Start()
+    {
+    }
 
-		bool revertFogState;
+    private void OnPostRender()
+    {
+      RenderSettings.fog = revertFogState;
+    }
 
-		void Start()
-		{
-
-		}
-		
-		void OnPreRender () 
-		{
-			revertFogState = RenderSettings.fog;
-			RenderSettings.fog = false;
-		}
-		
-		void OnPostRender () 
-		{
-			RenderSettings.fog = revertFogState;
-		}
-	}
-
+    private void OnPreRender()
+    {
+      revertFogState = RenderSettings.fog;
+      RenderSettings.fog = false;
+    }
+  }
 }

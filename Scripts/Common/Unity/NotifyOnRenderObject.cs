@@ -1,27 +1,18 @@
-﻿using UnityEngine;
-using System;
-using System.Collections.Generic;
-
-
-namespace Ceto.Common.Unity.Utility
+﻿namespace Ceto.Common.Unity.Utility
 {
-
+  /// <summary>
+  ///   Allows a list of functions to be added to a gameobject.
+  ///   When the object gets rendered each function is called.
+  ///   Allows for some custom code to run before rendering.
+  /// </summary>
+  public class NotifyOnRenderObject : NotifyOnEvent
+  {
     /// <summary>
-    /// Allows a list of functions to be added to a gameobject.
-    /// When the object gets rendered each function is called.
-    /// Allows for some custom code to run before rendering.
+    ///   Called when this gameobject gets rendered.
     /// </summary>
-	public class NotifyOnRenderObject : NotifyOnEvent
+    private void OnRenderObject()
     {
-
-        /// <summary>
-        /// Called when this gameobject gets rendered.
-        /// </summary>
-        void OnRenderObject()
-        {
-            OnEvent();
-        }
-
-
+      OnEvent();
     }
+  }
 }

@@ -1,198 +1,171 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 namespace Ceto
 {
+  /// <summary>
+  ///   My hack of a buoyancy script.
+  ///   This is just for the demo.
+  ///   Dont use this script. I have no idea what I am doing.
+  /// </summary>
+  [AddComponentMenu("Ceto/Buoyancy/Buoyancy")]
+  public class Buoyancy : MonoBehaviour
+  {
+    public enum MASS_UNIT
+    {
+      KILOGRAMS,
+      TENS_OF_KILOGRAMS,
+      TONNES,
+      TENS_OF_TONNES
+    }
 
-	/// <summary>
-	/// My hack of a buoyancy script.
-	/// This is just for the demo. 
-	/// Dont use this script. I have no idea what I am doing.
-	/// </summary>
-	[AddComponentMenu("Ceto/Buoyancy/Buoyancy")]
-	public class Buoyancy : MonoBehaviour 
-	{
+    public float radius = 0.5f;
 
-		public enum MASS_UNIT { KILOGRAMS, TENS_OF_KILOGRAMS, TONNES, TENS_OF_TONNES };
+    [Range(100.0f, 10000.0f)] public float density = 400.0f;
 
-		float DENSITY_WATER = 999.97f;
+    [Range(0.0f, 100.0f)] public float stickyness = 0.1f;
 
-		public float radius = 0.5f;
+    public MASS_UNIT unit = MASS_UNIT.TENS_OF_TONNES;
 
-		[Range(100.0f, 10000.0f)]
-		public float density = 400.0f;
+    public float dragCoefficient = 0.3f;
 
-		[Range(0.0f, 100.0f)]
-		public float stickyness = 0.1f;
+    private readonly float DENSITY_WATER = 999.97f;
 
-		public MASS_UNIT unit = MASS_UNIT.TENS_OF_TONNES;
+    public bool PartOfStructure { get; set; }
 
-		public float dragCoefficient = 0.3f;
+    public float Volume { get; private set; }
 
-		public bool PartOfStructure { get; set; }
+    public float SubmergedVolume { get; private set; }
 
-		public float Volume { get; private set; }
+    public float PercentageSubmerged => SubmergedVolume / Volume;
 
-		public float SubmergedVolume { get; private set; }
+    public float SurfaceArea { get; private set; }
 
-		public float PercentageSubmerged { get { return SubmergedVolume / Volume; } }
+    public float Mass { get; private set; }
 
-		public float SurfaceArea { get; private set; }
+    public float WaterHeight { get; private set; }
 
-		public float Mass { get; private set; }
+    public Vector3 BuoyantForce { get; private set; }
 
-		public float WaterHeight { get;  private set; }
+    public Vector3 DragForce { get; private set; }
 
-		public Vector3 BuoyantForce { get; private set; }
+    public Vector3 Stickyness { get; private set; }
 
-		public Vector3 DragForce { get; private set; }
+    public Vector3 TotalForces => BuoyantForce + DragForce + Stickyness;
 
-		public Vector3 Stickyness { get; private set; }
+    private void Start()
+    {
+      UpdateProperties();
+    }
 
-		public Vector3 TotalForces { get { return BuoyantForce + DragForce + Stickyness; } }
+    private void FixedUpdate()
+    {
+      if (PartOfStructure) return;
 
-		void Start () 
-		{
-		
-			UpdateProperties();
-			
-		}
+      var body = GetComponent<Rigidbody>();
 
-		void FixedUpdate()
-		{
+      if (body == null)
+        body = gameObject.AddComponent<Rigidbody>();
 
-			if(PartOfStructure) return;
+      body.mass = Mass;
 
-			Rigidbody body = GetComponent<Rigidbody>();
+      UpdateProperties();
+      UpdateForces(body);
 
-			if(body == null)
-				body = gameObject.AddComponent<Rigidbody>();
+      body.AddForce(TotalForces);
+    }
 
-			body.mass = Mass;
+    private void OnDrawGizmos()
+    {
+      if (!enabled) return;
 
-			UpdateProperties();
-			UpdateForces(body);
+      Gizmos.color = Color.red;
+      Gizmos.DrawWireSphere(transform.position, radius);
+    }
 
-			body.AddForce(TotalForces);
+    public void UpdateProperties()
+    {
+      Volume = 4.0f / 3.0f * Mathf.PI * Mathf.Pow(radius, 3);
 
-		}
+      Mass = Volume * density * GetUnitScale();
 
-		public void UpdateProperties()
-		{
+      SurfaceArea = 4.0f * Mathf.PI * Mathf.Pow(radius, 2);
+    }
 
-			Volume = (4.0f / 3.0f) * Mathf.PI * Mathf.Pow(radius, 3);
-			
-			Mass = Volume * density * GetUnitScale();
-			
-			SurfaceArea = 4.0f * Mathf.PI * Mathf.Pow(radius, 2);
+    public void UpdateForces(Rigidbody body)
+    {
+      if (Ocean.Instance == null)
+      {
+        BuoyantForce = Vector3.zero;
+        DragForce = Vector3.zero;
+        Stickyness = Vector3.zero;
+        return;
+      }
 
-		}
-		
-		public void UpdateForces(Rigidbody body) 
-		{
+      var pos = transform.position;
 
-			if(Ocean.Instance == null)
-			{
-				BuoyantForce = Vector3.zero;
-				DragForce = Vector3.zero;
-				Stickyness = Vector3.zero;
-				return;
-			}
+      WaterHeight = Ocean.Instance.QueryWaves(pos.x, pos.z);
 
-			Vector3 pos = transform.position;
+      CalculateSubmersion(radius, pos.y);
 
-			WaterHeight = Ocean.Instance.QueryWaves(pos.x, pos.z);
+      var unitScale = GetUnitScale();
 
-			CalculateSubmersion(radius, pos.y);
+      var Fb = DENSITY_WATER * unitScale * SubmergedVolume;
 
-			float unitScale = GetUnitScale();
+      BuoyantForce = Physics.gravity * -Fb;
 
-			float Fb = DENSITY_WATER * unitScale * SubmergedVolume;
+      var velocity = body.velocity;
 
-			BuoyantForce = Physics.gravity * -Fb;
+      var vm = velocity.magnitude;
+      velocity = velocity.normalized * vm * vm * -1.0f;
 
-			Vector3 velocity = body.velocity;
+      DragForce = 0.5f * dragCoefficient * DENSITY_WATER * unitScale * SubmergedVolume * velocity;
 
-			float vm = velocity.magnitude;
-			velocity = velocity.normalized * vm * vm * -1.0f;
+      //Cant get the ship to stay level on the surface so added this hack.
+      //This is not a good idea.
+      Stickyness = Vector3.up * (WaterHeight - pos.y) * Mass * stickyness;
+    }
 
-			DragForce = 0.5f * dragCoefficient * DENSITY_WATER * unitScale * SubmergedVolume * velocity;
+    private void CalculateSubmersion(float r, float y)
+    {
+      var h = WaterHeight - (y - radius);
 
-			//Cant get the ship to stay level on the surface so added this hack.
-			//This is not a good idea.
-			Stickyness = Vector3.up * (WaterHeight-pos.y) * Mass * stickyness;
+      var d = 2.0f * r - h;
 
-		}
+      if (d <= 0.0f)
+      {
+        SubmergedVolume = Volume;
+        return;
+      }
 
-		void CalculateSubmersion(float r, float y)
-		{
+      if (d > 2.0f * r)
+      {
+        SubmergedVolume = 0.0f;
+        return;
+      }
 
-			float h = WaterHeight - (y - radius);
+      var c = Mathf.Sqrt(h * d);
 
-			float d = 2.0f * r - h;
+      SubmergedVolume = Mathf.PI / 6.0f * h * (3.0f * c * c + h * h);
+    }
 
-			if(d <= 0.0f)
-			{
-				SubmergedVolume = Volume;
-				return;
-			}
-			else if(d > 2.0f * r)
-			{
-				SubmergedVolume = 0.0f;
-				return;
-			}
+    private float GetUnitScale()
+    {
+      switch ((int)unit)
+      {
+        case (int)MASS_UNIT.KILOGRAMS:
+          return 1.0f;
 
-			float c = Mathf.Sqrt(h * d);
+        case (int)MASS_UNIT.TENS_OF_KILOGRAMS:
+          return 0.1f;
 
-			SubmergedVolume = Mathf.PI / 6.0f * h * ((3.0f * c * c) + (h * h));
+        case (int)MASS_UNIT.TONNES:
+          return 0.001f;
 
-		}
+        case (int)MASS_UNIT.TENS_OF_TONNES:
+          return 0.0001f;
+      }
 
-		float GetUnitScale()
-		{
-
-			switch((int)unit)
-			{
-			case (int)MASS_UNIT.KILOGRAMS:
-				return 1.0f;
-
-			case (int)MASS_UNIT.TENS_OF_KILOGRAMS:
-				return 0.1f;
-
-			case (int)MASS_UNIT.TONNES:
-				return 0.001f;
-
-			case (int)MASS_UNIT.TENS_OF_TONNES:
-				return 0.0001f;
-
-			}
-
-			return 1.0f;
-
-		}
-
-		void OnDrawGizmos() 
-		{
-			if(!enabled) return;
-
-			Gizmos.color = Color.red;
-			Gizmos.DrawWireSphere(transform.position, radius);
-		}
-
-		
-	}
-	
+      return 1.0f;
+    }
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

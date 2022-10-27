@@ -1,14 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-
-namespace Ceto
+﻿namespace Ceto
 {
-
-    public interface IOverlaySampler
-    {
-
-        void QueryWaves(WaveQuery query);
-
-    }
-
+  public interface IOverlaySampler
+  {
+    void QueryWaves(WaveQuery query);
+  }
 }

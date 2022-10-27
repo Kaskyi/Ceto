@@ -1,40 +1,32 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace Ceto.Common.Unity.Utility
 {
+  public class Wireframe : MonoBehaviour
+  {
+    public bool on;
 
-	public class Wireframe : MonoBehaviour 
-	{
+    public KeyCode toggleKey = KeyCode.F2;
 
-		public bool on = false;
+    private void Start()
+    {
+    }
 
-		public KeyCode toggleKey = KeyCode.F2;
+    private void Update()
+    {
+      if (Input.GetKeyDown(toggleKey)) on = !on;
+    }
 
-		void Start()
-		{
+    private void OnPostRender()
+    {
+      if (on)
+        GL.wireframe = false;
+    }
 
-		}
-
-		void Update()
-		{
-
-			if(Input.GetKeyDown(toggleKey)) on = !on;
-
-		}
-
-		void OnPreRender() 
-		{
-			if(on)
-				GL.wireframe = true;
-		}
-
-		void OnPostRender() 
-		{
-			if(on)
-				GL.wireframe = false;
-		}
-
-	}
-
+    private void OnPreRender()
+    {
+      if (on)
+        GL.wireframe = true;
+    }
+  }
 }

@@ -8,27 +8,27 @@
 */
 fixed FoamAmount(float3 worldPos, fixed4 foam)
 {
+    //foam.x == the wave (spectrum) foam.
+    //foam.y == the overlay foam with foam texture.
+    //foam.z == the overlay foam with no foam texture.
 
-	//foam.x == the wave (spectrum) foam.
-	//foam.y == the overlay foam with foam texture.
-	//foam.z == the overlay foam with no foam texture.
+    fixed foamTexture = 0.0;
 
-	fixed foamTexture = 0.0;
-
-	#ifndef CETO_DISABLE_FOAM_TEXTURE
-   		foamTexture += tex2D(Ceto_FoamTexture0, (worldPos.xz + Ceto_FoamTextureScale0.z) * Ceto_FoamTextureScale0.xy).a * 0.5;
-		foamTexture += tex2D(Ceto_FoamTexture1, (worldPos.xz + Ceto_FoamTextureScale1.z) * Ceto_FoamTextureScale1.xy).a * 0.5;
-	#else
+    #ifndef CETO_DISABLE_FOAM_TEXTURE
+    foamTexture += tex2D(Ceto_FoamTexture0, (worldPos.xz + Ceto_FoamTextureScale0.z) * Ceto_FoamTextureScale0.xy).a *
+        0.5;
+    foamTexture += tex2D(Ceto_FoamTexture1, (worldPos.xz + Ceto_FoamTextureScale1.z) * Ceto_FoamTextureScale1.xy).a *
+        0.5;
+    #else
 		foamTexture = 1.0;
-	#endif
+    #endif
 
-	//Apply texture to the wave foam if that option is enabled.
+    //Apply texture to the wave foam if that option is enabled.
     foam.x = lerp(foam.x, foam.x * foamTexture, Ceto_TextureWaveFoam);
-	//Apply texture to overlay foam
-   	foam.y = foam.y * foamTexture;
-   
-   	return saturate(max(max(foam.x, foam.y), foam.z));
+    //Apply texture to overlay foam
+    foam.y = foam.y * foamTexture;
 
+    return saturate(max(max(foam.x, foam.y), foam.z));
 }
 
 /*
@@ -37,14 +37,13 @@ fixed FoamAmount(float3 worldPos, fixed4 foam)
 */
 fixed3 AddFoamColor(fixed foamAmount, fixed3 oceanCol)
 {
+    //apply the absorption coefficient to the foam based on the foam strength.
+    //This will fade the foam add make it look like it has some depth and
+    //since it uses the abs cof the color should match the water.
+    fixed3 foamCol = Ceto_FoamTint * foamAmount * exp(-Ceto_AbsCof.rgb * (1.0 - foamAmount) * 1.0);
 
-	//apply the absorption coefficient to the foam based on the foam strength.
-	//This will fade the foam add make it look like it has some depth and
-	//since it uses the abs cof the color should match the water.
-	fixed3 foamCol = Ceto_FoamTint * foamAmount * exp(-Ceto_AbsCof.rgb * (1.0 - foamAmount) * 1.0);
-
-	//TODO - find better way than lerp to blend.
-	return lerp(oceanCol, foamCol, foamAmount);
+    //TODO - find better way than lerp to blend.
+    return lerp(oceanCol, foamCol, foamAmount);
 }
 
 /*
@@ -54,10 +53,9 @@ fixed3 AddFoamColor(fixed foamAmount, fixed3 oceanCol)
 */
 fixed3 SubSurfaceScatter(fixed3 V, fixed3 N, float surfaceDepth)
 {
+    fixed3 col = fixed3(0, 0, 0);
 
-	fixed3 col = fixed3(0,0,0);
-
-	#ifdef CETO_UNDERWATER_ON
+    #ifdef CETO_UNDERWATER_ON
 
 		//The strength based on the view and up direction.
 		fixed VU = 1.0 -  max(0.0, dot(V, fixed3(0,1,0)));
@@ -81,10 +79,9 @@ fixed3 SubSurfaceScatter(fixed3 V, fixed3 N, float surfaceDepth)
 		//Apply the absorption coefficient base on the distance and tint final color.
 		col = Ceto_SSSTint * exp(-Ceto_SSSCof.rgb * d * Ceto_SSSCof.a) * s;
 		
-	#endif
-	
-	return col;
+    #endif
 
+    return col;
 }
 
 /*
@@ -92,17 +89,17 @@ fixed3 SubSurfaceScatter(fixed3 V, fixed3 N, float surfaceDepth)
 */
 float4x4 GetIVPMatrix()
 {
-	return Ceto_Camera_IVP0;
-/*
-#if UNITY_VERSION >= 540 && defined(CETO_STERO_CAMERA)
-	if (unity_StereoEyeIndex > 0)
-		return Ceto_Camera_IVP1;
-	else
-		return Ceto_Camera_IVP0;
-#else
-	return Ceto_Camera_IVP0;
-#endif
-*/
+    return Ceto_Camera_IVP0;
+    /*
+    #if UNITY_VERSION >= 540 && defined(CETO_STERO_CAMERA)
+        if (unity_StereoEyeIndex > 0)
+            return Ceto_Camera_IVP1;
+        else
+            return Ceto_Camera_IVP0;
+    #else
+        return Ceto_Camera_IVP0;
+    #endif
+    */
 }
 
 /*
@@ -110,17 +107,16 @@ float4x4 GetIVPMatrix()
 */
 float3 WorldPosFromDepth(float2 uv, float depth)
 {
+    #if defined(UNITY_REVERSED_Z)
+    depth = 1.0 - depth;
+    #endif
 
-	#if defined(UNITY_REVERSED_Z)
-		depth = 1.0 - depth;
-	#endif
+    float4 ndc = float4(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, depth * 2.0 - 1.0, 1);
 
-	float4 ndc = float4(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, depth * 2.0 - 1.0, 1);
-	
-	float4 worldPos = mul(GetIVPMatrix(), ndc);
-	worldPos /= worldPos.w;
+    float4 worldPos = mul(GetIVPMatrix(), ndc);
+    worldPos /= worldPos.w;
 
-	return worldPos.xyz;
+    return worldPos.xyz;
 }
 
 /*
@@ -129,20 +125,18 @@ float3 WorldPosFromDepth(float2 uv, float depth)
 */
 float3 WorldDepthPos(float2 screenUV)
 {
+    float3 worldPos = float3(0, 0, 0);
 
-	float3 worldPos = float3(0, 0, 0);
-
-	#ifdef CETO_UNDERWATER_ON
-	#ifndef CETO_USE_OCEAN_DEPTHS_BUFFER
+    #ifdef CETO_UNDERWATER_ON
+    #ifndef CETO_USE_OCEAN_DEPTHS_BUFFER
 
 	float db = tex2D(Ceto_DepthBuffer, screenUV).x;
 	worldPos = WorldPosFromDepth(screenUV, db);
 
-	#endif
-	#endif
+    #endif
+    #endif
 
-	return worldPos;
-
+    return worldPos;
 }
 
 /*
@@ -150,11 +144,10 @@ float3 WorldDepthPos(float2 screenUV)
 */
 float SampleDepthBuffer(float2 screenUV)
 {
+    //float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUV).x;	
+    float depth = tex2D(Ceto_DepthBuffer, screenUV).x;
 
-	//float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUV).x;	
-	float depth = tex2D(Ceto_DepthBuffer, screenUV).x;
-
-	return Linear01Depth(depth);
+    return Linear01Depth(depth);
 }
 
 /*
@@ -164,22 +157,21 @@ float SampleDepthBuffer(float2 screenUV)
 */
 float4 SampleOceanDepthFromDepthBuffer(float2 screenUV)
 {
+    //float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUV).x
+    float depth = tex2D(Ceto_DepthBuffer, screenUV).x;
 
-	//float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, screenUV).x
-	float depth = tex2D(Ceto_DepthBuffer, screenUV).x;
+    float3 worldPos = WorldPosFromDepth(screenUV, depth);
 
-	float3 worldPos = WorldPosFromDepth(screenUV, depth);
+    float4 oceanDepth = float4(0, 0, 0, 0);
 
-	float4 oceanDepth = float4(0,0,0,0);
+    float ld = Linear01Depth(depth);
 
-	float ld = Linear01Depth(depth);
-	
-	oceanDepth.x = (worldPos.y-Ceto_OceanLevel) * -1.0;
-	oceanDepth.y = ld * _ProjectionParams.z / Ceto_MaxDepthDist;
-	oceanDepth.z = ld;
-	oceanDepth.w = 0;
-	
-	return oceanDepth;
+    oceanDepth.x = (worldPos.y - Ceto_OceanLevel) * -1.0;
+    oceanDepth.y = ld * _ProjectionParams.z / Ceto_MaxDepthDist;
+    oceanDepth.z = ld;
+    oceanDepth.w = 0;
+
+    return oceanDepth;
 }
 
 /*
@@ -188,16 +180,14 @@ float4 SampleOceanDepthFromDepthBuffer(float2 screenUV)
 */
 float4 SampleOceanDepthTexture(float2 uv)
 {
-
-#if UNITY_VERSION >= 540 && defined(CETO_STERO_CAMERA)
+    #if UNITY_VERSION >= 540 && defined(CETO_STERO_CAMERA)
 	if (unity_StereoEyeIndex > 0)
 		return tex2D(Ceto_OceanDepth1, uv);
 	else
 		return tex2D(Ceto_OceanDepth0, uv);
-#else
-	return tex2D(Ceto_OceanDepth0, uv);
-#endif
-
+    #else
+    return tex2D(Ceto_OceanDepth0, uv);
+    #endif
 }
 
 /*
@@ -212,19 +202,17 @@ float4 SampleOceanDepthTexture(float2 uv)
 */
 float4 SampleOceanDepth(float2 screenUV)
 {
+    float4 oceanDepth = SampleOceanDepthTexture(screenUV);
 
-	float4 oceanDepth = SampleOceanDepthTexture(screenUV);
+    float ld = oceanDepth.y;
 
-	float ld = oceanDepth.y;
+    //unnormalize.
+    oceanDepth.x *= Ceto_MaxDepthDist;
+    oceanDepth.y = ld * _ProjectionParams.z / Ceto_MaxDepthDist;
+    oceanDepth.z = ld;
+    oceanDepth.w = 0;
 
-	//unnormalize.
-	oceanDepth.x *= Ceto_MaxDepthDist;
-	oceanDepth.y = ld * _ProjectionParams.z / Ceto_MaxDepthDist;
-	oceanDepth.z = ld;
-	oceanDepth.w = 0;
-
-	return oceanDepth;
-
+    return oceanDepth;
 }
 
 /*
@@ -237,29 +225,26 @@ float4 SampleOceanDepth(float2 screenUV)
 #define COMPUTE_OCEAN_DEPTH_PARAMETERS \
 	o.depth = float4(0,0,0,0);\
 	o.depth.x = (worldPos.y-Ceto_OceanLevel) * -1.0 / Ceto_MaxDepthDist;\
-	o.depth.y = COMPUTE_DEPTH_01;\
-
+	o.depth.y = COMPUTE_DEPTH_01;
 /*
 * Computes the depth value used to apply the underwater effect.
 */
 float2 OceanDepth(float2 screenUV, float3 worldPos, float depth)
 {
+    float2 surfaceDepth;
+    surfaceDepth.x = (worldPos.y - Ceto_OceanLevel) * -1.0;
+    surfaceDepth.y = depth * _ProjectionParams.z / Ceto_MaxDepthDist;
 
-	float2 surfaceDepth;
-	surfaceDepth.x = (worldPos.y-Ceto_OceanLevel) * -1.0;
-	surfaceDepth.y = depth * _ProjectionParams.z / Ceto_MaxDepthDist;
-	
-	#ifdef CETO_USE_OCEAN_DEPTHS_BUFFER
+    #ifdef CETO_USE_OCEAN_DEPTHS_BUFFER
 		float2 oceanDepth = SampleOceanDepth(screenUV).xy;
-	#else
-		float2 oceanDepth = SampleOceanDepthFromDepthBuffer(screenUV).xy;
-	#endif
+    #else
+    float2 oceanDepth = SampleOceanDepthFromDepthBuffer(screenUV).xy;
+    #endif
 
-	oceanDepth.x = max(0.0, oceanDepth.x - surfaceDepth.x) / Ceto_MaxDepthDist;
-	oceanDepth.y = max(0.0, oceanDepth.y - surfaceDepth.y);
-	
-	return oceanDepth;
-	
+    oceanDepth.x = max(0.0, oceanDepth.x - surfaceDepth.x) / Ceto_MaxDepthDist;
+    oceanDepth.y = max(0.0, oceanDepth.y - surfaceDepth.y);
+
+    return oceanDepth;
 }
 
 /*
@@ -267,31 +252,30 @@ float2 OceanDepth(float2 screenUV, float3 worldPos, float depth)
 */
 float4 DisortScreenUV(half3 normal, float4 screenUV, float surfaceDepth, float dist, half3 view)
 {
+    //Fade by distance so distortion is less on far away objects.
+    float distortionFade = 1.0 - clamp(dist * 0.01, 0.0001, 1.0);
+    float3 distortion = normal * Ceto_RefractionDistortion * distortionFade * distortionFade;
 
-	//Fade by distance so distortion is less on far away objects.
-	float distortionFade = 1.0 - clamp(dist * 0.01, 0.0001, 1.0);
-	float3 distortion = normal * Ceto_RefractionDistortion * distortionFade * distortionFade;
+    distortion.z *= dot(view, normal);
+    float4 distortedUV = saturate(screenUV + distortion.xzxz);
 
-	distortion.z *= dot(view, normal);
-	float4 distortedUV = saturate(screenUV + distortion.xzxz);
-
-#ifdef CETO_USE_OCEAN_DEPTHS_BUFFER
+    #ifdef CETO_USE_OCEAN_DEPTHS_BUFFER
 	float depth = SampleOceanDepth(distortedUV.xy).z;
-#else
-	float depth = SampleDepthBuffer(distortedUV.xy);
-#endif
+    #else
+    float depth = SampleDepthBuffer(distortedUV.xy);
+    #endif
 
-	//If the distorted depth is less than the ocean mesh depth
-	//then the distorted uv is in front of a object. The distortion
-	//cant be applied in this case as the color from the grab texture
-	//will be from a object that is not under the water.
-	if (depth <= surfaceDepth) distortedUV = screenUV;
+    //If the distorted depth is less than the ocean mesh depth
+    //then the distorted uv is in front of a object. The distortion
+    //cant be applied in this case as the color from the grab texture
+    //will be from a object that is not under the water.
+    if (depth <= surfaceDepth) distortedUV = screenUV;
 
-	//The smaller the depth difference the smaller the distortion
-	float distortionMultiplier = saturate((depth - surfaceDepth) * _ProjectionParams.z * 0.25);
-	distortedUV = lerp(screenUV, distortedUV, distortionMultiplier);
+    //The smaller the depth difference the smaller the distortion
+    float distortionMultiplier = saturate((depth - surfaceDepth) * _ProjectionParams.z * 0.25);
+    distortedUV = lerp(screenUV, distortedUV, distortionMultiplier);
 
-	return distortedUV;
+    return distortedUV;
 }
 
 /*
@@ -300,14 +284,13 @@ float4 DisortScreenUV(half3 normal, float4 screenUV, float surfaceDepth, float d
 */
 fixed3 AboveRefractionColor(float2 grabUV, float3 surfacePos, float depth, fixed3 caustics)
 {
+    fixed3 grab = tex2D(Ceto_RefractionGrab, grabUV).rgb * Ceto_AboveRefractionIntensity;
 
-	fixed3 grab = tex2D(Ceto_RefractionGrab, grabUV).rgb * Ceto_AboveRefractionIntensity;
+    grab += caustics;
 
-	grab += caustics;
-	
-	fixed3 col = grab * Ceto_AbsTint * exp(-Ceto_AbsCof.rgb * depth * Ceto_MaxDepthDist * Ceto_AbsCof.a);
-	
-	return col;
+    fixed3 col = grab * Ceto_AbsTint * exp(-Ceto_AbsCof.rgb * depth * Ceto_MaxDepthDist * Ceto_AbsCof.a);
+
+    return col;
 }
 
 /*
@@ -315,10 +298,9 @@ fixed3 AboveRefractionColor(float2 grabUV, float3 surfacePos, float depth, fixed
 */
 fixed3 BelowRefractionColor(float2 grabUV)
 {
+    fixed3 grab = tex2D(Ceto_RefractionGrab, grabUV).rgb * Ceto_BelowRefractionIntensity;
 
-	fixed3 grab = tex2D(Ceto_RefractionGrab, grabUV).rgb * Ceto_BelowRefractionIntensity;
-	
-	return grab;
+    return grab;
 }
 
 /*
@@ -327,17 +309,16 @@ fixed3 BelowRefractionColor(float2 grabUV)
 */
 fixed3 AddAboveInscatter(fixed3 col, float depth)
 {
+    //There are 3 methods used to apply the inscatter.
+    half3 inscatterScale;
+    inscatterScale.x = saturate(depth * Ceto_AboveInscatterScale);
+    inscatterScale.y = saturate(1.0 - exp(-depth * Ceto_AboveInscatterScale));
+    inscatterScale.z = saturate(1.0 - exp(-depth * depth * Ceto_AboveInscatterScale));
 
-	//There are 3 methods used to apply the inscatter.
-	half3 inscatterScale;
-	inscatterScale.x = saturate(depth * Ceto_AboveInscatterScale);
-	inscatterScale.y = saturate(1.0-exp(-depth * Ceto_AboveInscatterScale));
-	inscatterScale.z = saturate(1.0-exp(-depth * depth * Ceto_AboveInscatterScale));
-	
-	//Apply mask to pick which methods result to use.
-	half a = dot(inscatterScale, Ceto_AboveInscatterMode);
-	
-	return lerp(col, Ceto_AboveInscatterColor.rgb, a * Ceto_AboveInscatterColor.a);
+    //Apply mask to pick which methods result to use.
+    half a = dot(inscatterScale, Ceto_AboveInscatterMode);
+
+    return lerp(col, Ceto_AboveInscatterColor.rgb, a * Ceto_AboveInscatterColor.a);
 }
 
 /*
@@ -346,16 +327,16 @@ fixed3 AddAboveInscatter(fixed3 col, float depth)
 */
 fixed3 AddBelowInscatter(fixed3 col, float depth)
 {
-	//There are 3 methods used to apply the inscatter.
-	half3 inscatterScale;
-	inscatterScale.x = saturate(depth * Ceto_BelowInscatterScale);
-	inscatterScale.y = saturate(1.0-exp(-depth * Ceto_BelowInscatterScale));
-	inscatterScale.z = saturate(1.0-exp(-depth * depth * Ceto_BelowInscatterScale));
-	
-	//Apply mask to pick which methods result to use.
-	half a = dot(inscatterScale, Ceto_BelowInscatterMode);
-	
-	return lerp(col, Ceto_BelowInscatterColor.rgb, a * Ceto_BelowInscatterColor.a);
+    //There are 3 methods used to apply the inscatter.
+    half3 inscatterScale;
+    inscatterScale.x = saturate(depth * Ceto_BelowInscatterScale);
+    inscatterScale.y = saturate(1.0 - exp(-depth * Ceto_BelowInscatterScale));
+    inscatterScale.z = saturate(1.0 - exp(-depth * depth * Ceto_BelowInscatterScale));
+
+    //Apply mask to pick which methods result to use.
+    half a = dot(inscatterScale, Ceto_BelowInscatterMode);
+
+    return lerp(col, Ceto_BelowInscatterColor.rgb, a * Ceto_BelowInscatterColor.a);
 }
 
 /*
@@ -363,10 +344,9 @@ fixed3 AddBelowInscatter(fixed3 col, float depth)
 */
 fixed3 OceanColorFromAbove(float4 distortedUV, float3 surfacePos, float surfaceDepth, fixed3 caustics)
 {
+    fixed3 col = Ceto_DefaultOceanColor;
 
-	fixed3 col = Ceto_DefaultOceanColor;
-
-	#ifdef CETO_UNDERWATER_ON
+    #ifdef CETO_UNDERWATER_ON
 		
 		float2 oceanDepth = OceanDepth(distortedUV.xy, surfacePos, surfaceDepth);
 
@@ -376,10 +356,9 @@ fixed3 OceanColorFromAbove(float4 distortedUV, float3 surfacePos, float surfaceD
 		
 		col = AddAboveInscatter(refraction, depthBlend);
 
-	#endif
-	
-	return col;
-	
+    #endif
+
+    return col;
 }
 
 /*
@@ -387,7 +366,7 @@ fixed3 OceanColorFromAbove(float4 distortedUV, float3 surfacePos, float surfaceD
 */
 fixed3 DefaultUnderSideColor()
 {
-	return Ceto_BelowInscatterColor.rgb;
+    return Ceto_BelowInscatterColor.rgb;
 }
 
 /*
@@ -395,17 +374,15 @@ fixed3 DefaultUnderSideColor()
 */
 fixed3 SkyColorFromBelow(float4 distortedUV)
 {
+    fixed3 col = Ceto_DefaultOceanColor;
 
-	fixed3 col = Ceto_DefaultOceanColor;
-
-	#ifdef CETO_UNDERWATER_ON
+    #ifdef CETO_UNDERWATER_ON
 		
 		col = BelowRefractionColor(distortedUV.zw);
 		
-	#endif
-	
-	return col;
-	
+    #endif
+
+    return col;
 }
 
 /*
@@ -413,20 +390,19 @@ fixed3 SkyColorFromBelow(float4 distortedUV)
 */
 float EdgeFade(float2 screenUV, float3 view, float3 surfacePos, float3 worldDepthPos)
 {
+    float edgeFade = 1.0;
 
-	float edgeFade = 1.0;
+    #ifdef CETO_UNDERWATER_ON
+    #ifndef CETO_DISABLE_EDGE_FADE
 
-	#ifdef CETO_UNDERWATER_ON
-	#ifndef CETO_DISABLE_EDGE_FADE
-
-	//Fade based on dist between ocean surface and bottom
-	#ifdef CETO_USE_OCEAN_DEPTHS_BUFFER
+    //Fade based on dist between ocean surface and bottom
+    #ifdef CETO_USE_OCEAN_DEPTHS_BUFFER
 		float surfaceDepth = (surfacePos.y - Ceto_OceanLevel) * -1.0;
 		float oceanDepth = SampleOceanDepthTexture(screenUV).x * Ceto_MaxDepthDist;
 		float dist = oceanDepth - surfaceDepth;
-	#else
+    #else
 		float dist = surfacePos.y - worldDepthPos.y;
-	#endif
+    #endif
 
 		dist = max(0.0, dist);
 		edgeFade = 1.0 - saturate(exp(-dist * Ceto_EdgeFade) * 2.0);
@@ -438,10 +414,10 @@ float EdgeFade(float2 screenUV, float3 view, float3 surfacePos, float3 worldDept
 
 		edgeFade = lerp(1.0, edgeFade, viewMask);
 
-	#endif
-	#endif
+    #endif
+    #endif
 
-	return edgeFade;
+    return edgeFade;
 }
 
 /*
@@ -455,43 +431,41 @@ float EdgeFade(float2 screenUV, float3 view, float3 surfacePos, float3 worldDept
 */
 fixed3 ApplyEdgeFade(fixed3 col, float2 grabUV, float edgeFade, out fixed alpha, out fixed lightMask)
 {
+    alpha = 1.0;
+    lightMask = 0.0;
 
-	alpha = 1.0;
-	lightMask = 0.0;
+    #ifdef CETO_UNDERWATER_ON
+    #ifndef CETO_DISABLE_EDGE_FADE
 
-	#ifdef CETO_UNDERWATER_ON
-	#ifndef CETO_DISABLE_EDGE_FADE
-
-		#ifdef CETO_OPAQUE_QUEUE
+    #ifdef CETO_OPAQUE_QUEUE
 			fixed3 grab = tex2D(Ceto_RefractionGrab, grabUV).rgb;
 			col = lerp(grab, col, edgeFade);
 			alpha = 1.0;
 			lightMask = 1.0 - edgeFade;
-		#endif
+    #endif
 
-		#ifdef CETO_TRANSPARENT_QUEUE
+    #ifdef CETO_TRANSPARENT_QUEUE
 			alpha = edgeFade;
 			lightMask = 0.0;
-		#endif
+    #endif
 
-	#endif
-	#endif
+    #endif
+    #endif
 
-	return col;
-
+    return col;
 }
 
 /*
 * Calculate the caustic color when above the water.
 */
-fixed3 CausticsFromAbove(float2 disortionUV, half3 unmaskedNorm, float3 surfacePos, float3 distortedWorldDepthPos, float dist)
+fixed3 CausticsFromAbove(float2 disortionUV, half3 unmaskedNorm, float3 surfacePos, float3 distortedWorldDepthPos,
+                         float dist)
 {
+    fixed3 col = fixed3(0, 0, 0);
 
-	fixed3 col = fixed3(0, 0, 0);
-
-	#ifdef CETO_UNDERWATER_ON
-	#ifndef CETO_USE_OCEAN_DEPTHS_BUFFER
-	#ifndef CETO_DISABLE_CAUSTICS
+    #ifdef CETO_UNDERWATER_ON
+    #ifndef CETO_USE_OCEAN_DEPTHS_BUFFER
+    #ifndef CETO_DISABLE_CAUSTICS
 
 	float2 uv = distortedWorldDepthPos.xz * Ceto_CausticTextureScale.xy + unmaskedNorm.xz * Ceto_CausticDistortion.x;
 
@@ -511,12 +485,11 @@ fixed3 CausticsFromAbove(float2 disortionUV, half3 unmaskedNorm, float3 surfaceP
 
 	col = caustic * Ceto_CausticTint * nf * distFade * depthFade;
 
-	#endif
-	#endif
-	#endif
+    #endif
+    #endif
+    #endif
 
-	return col;
-
+    return col;
 }
 
 /*
@@ -524,12 +497,11 @@ fixed3 CausticsFromAbove(float2 disortionUV, half3 unmaskedNorm, float3 surfaceP
 */
 fixed3 CausticsFromBelow(float2 screenUV, half3 normal, float3 worldDepthPos, float dist)
 {
+    fixed3 col = fixed3(0, 0, 0);
 
-	fixed3 col = fixed3(0, 0, 0);
-
-	#ifdef CETO_UNDERWATER_ON
-	#ifndef CETO_USE_OCEAN_DEPTHS_BUFFER
-	#ifndef CETO_DISABLE_CAUSTICS
+    #ifdef CETO_UNDERWATER_ON
+    #ifndef CETO_USE_OCEAN_DEPTHS_BUFFER
+    #ifndef CETO_DISABLE_CAUSTICS
 
 	float2 uv = worldDepthPos.xz * Ceto_CausticTextureScale.xy + normal.xz * Ceto_CausticDistortion.y;
 
@@ -544,23 +516,21 @@ fixed3 CausticsFromBelow(float2 screenUV, half3 normal, float3 worldDepthPos, fl
 
 	col = caustic * Ceto_CausticTint * nf * depthFade;
 
-	#endif
-	#endif
-	#endif
+    #endif
+    #endif
+    #endif
 
-	return col;
-
+    return col;
 }
 
 /*
 * The underwater color used in the post effect shader.
-*/ 
+*/
 fixed3 UnderWaterColor(fixed3 belowColor, float dist)
 {
-	
-	fixed3 col = belowColor;
-	
-	#ifdef CETO_UNDERWATER_ON
+    fixed3 col = belowColor;
+
+    #ifdef CETO_UNDERWATER_ON
 		
 		col = belowColor * Ceto_BelowTint * exp(-Ceto_BelowCof.rgb * dist * Ceto_BelowCof.a);
 		
@@ -571,18 +541,9 @@ fixed3 UnderWaterColor(fixed3 belowColor, float dist)
 
 		col = AddBelowInscatter(col, dist);
 
-	#endif
-	
-	return col;
+    #endif
 
+    return col;
 }
 
 #endif
-
-
-
-
-
-
-
-

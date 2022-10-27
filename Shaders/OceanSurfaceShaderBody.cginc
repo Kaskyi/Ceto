@@ -5,79 +5,76 @@
 
 struct appdata_ceto
 {
-	float4 vertex : POSITION;
-	float4 tangent : TANGENT;
-	float3 normal : NORMAL;
-	float2 texcoord : TEXCOORD0;
+    float4 vertex : POSITION;
+    float4 tangent : TANGENT;
+    float3 normal : NORMAL;
+    float2 texcoord : TEXCOORD0;
 };
 
-struct Input 
+struct Input
 {
-	float4 wPos;
-	float4 screenUV;
-	float4 grabUV;
-	float4 texUV;
+    float4 wPos;
+    float4 screenUV;
+    float4 grabUV;
+    float4 texUV;
 };
 
-void OceanVert(inout appdata_ceto v, out Input OUT) 
+void OceanVert(inout appdata_ceto v, out Input OUT)
 {
-	
-	UNITY_INITIALIZE_OUTPUT(Input, OUT);
-	
-	float4 uv = float4(v.vertex.xy, v.texcoord.xy);
+    UNITY_INITIALIZE_OUTPUT(Input, OUT);
 
-	float4 oceanPos;
-	float3 displacement;
-	OceanPositionAndDisplacement(uv, oceanPos, displacement);
-	
-	v.vertex.xyz = oceanPos.xyz + displacement;
-	
-	v.tangent = float4(1,0,0,1);
-	
-	#ifdef CETO_OCEAN_TOPSIDE
+    float4 uv = float4(v.vertex.xy, v.texcoord.xy);
+
+    float4 oceanPos;
+    float3 displacement;
+    OceanPositionAndDisplacement(uv, oceanPos, displacement);
+
+    v.vertex.xyz = oceanPos.xyz + displacement;
+
+    v.tangent = float4(1, 0, 0, 1);
+
+    #ifdef CETO_OCEAN_TOPSIDE
 		v.normal = float3(0,1,0);
-	#else
-		v.normal = float3(0,-1,0);
-	#endif
-	
-	OUT.wPos = float4(v.vertex.xyz, COMPUTE_DEPTH_01);
-	OUT.texUV = uv;
+    #else
+    v.normal = float3(0, -1, 0);
+    #endif
 
-	float4 screenPos = UnityObjectToClipPos(v.vertex);
+    OUT.wPos = float4(v.vertex.xyz, COMPUTE_DEPTH_01);
+    OUT.texUV = uv;
 
-	float4 screenUV = ComputeScreenPos(screenPos);
-	screenUV = UNITY_PROJ_COORD(screenUV);
+    float4 screenPos = UnityObjectToClipPos(v.vertex);
 
-	float4 grabUV = ComputeGrabScreenPos(screenPos);
-	grabUV = UNITY_PROJ_COORD(grabUV);
+    float4 screenUV = ComputeScreenPos(screenPos);
+    screenUV = UNITY_PROJ_COORD(screenUV);
 
-	OUT.screenUV = screenUV;
-	OUT.grabUV = grabUV;
-	
-} 
+    float4 grabUV = ComputeGrabScreenPos(screenPos);
+    grabUV = UNITY_PROJ_COORD(grabUV);
 
-void OceanSurfTop(Input IN, inout SurfaceOutputOcean o) 
+    OUT.screenUV = screenUV;
+    OUT.grabUV = grabUV;
+}
+
+void OceanSurfTop(Input IN, inout SurfaceOutputOcean o)
 {
-	
-	float4 uv = IN.texUV;
-	float3 worldPos = IN.wPos.xyz;
-	float depth = IN.wPos.w;
+    float4 uv = IN.texUV;
+    float3 worldPos = IN.wPos.xyz;
+    float depth = IN.wPos.w;
 
-	float4 screenUV;
-	screenUV.xy = IN.screenUV.xy / IN.screenUV.w;
-	screenUV.zw = IN.grabUV.xy / IN.grabUV.w;
-	
-	float4 st = WorldPosToProjectorSpace(worldPos);
-	OceanClip(st, worldPos);
-			
-	half3 norm1, norm2, norm3;
-	half3 unmaskedNorm;
-	fixed4 foam;
-	
-	half3 view = normalize(_WorldSpaceCameraPos-worldPos);
-	float dist = length(_WorldSpaceCameraPos-worldPos);
+    float4 screenUV;
+    screenUV.xy = IN.screenUV.xy / IN.screenUV.w;
+    screenUV.zw = IN.grabUV.xy / IN.grabUV.w;
 
-	#ifdef CETO_USE_4_SPECTRUM_GRIDS
+    float4 st = WorldPosToProjectorSpace(worldPos);
+    OceanClip(st, worldPos);
+
+    half3 norm1, norm2, norm3;
+    half3 unmaskedNorm;
+    fixed4 foam;
+
+    half3 view = normalize(_WorldSpaceCameraPos - worldPos);
+    float dist = length(_WorldSpaceCameraPos - worldPos);
+
+    #ifdef CETO_USE_4_SPECTRUM_GRIDS
 
 		//If 4 grids are being used use 3 normals where...
 		//norm1 is grid 0 + 1
@@ -91,110 +88,104 @@ void OceanSurfTop(Input IN, inout SurfaceOutputOcean o)
 		if(dot(view, norm2) < 0.0) norm2 = reflect(norm2, view);
 		if(dot(view, norm3) < 0.0) norm3 = reflect(norm3, view);
 
-	#else
+    #else
 
-		//If 2 or 1 grid is being use just use one normal
-		//It then needs to be applied to norm1, nor2 and norm3.
-		half3 norm;
-		OceanNormalAndFoam(uv, st, worldPos, norm, unmaskedNorm, foam);
+    //If 2 or 1 grid is being use just use one normal
+    //It then needs to be applied to norm1, nor2 and norm3.
+    half3 norm;
+    OceanNormalAndFoam(uv, st, worldPos, norm, unmaskedNorm, foam);
 
-		if (dot(view, norm) < 0.0) norm = reflect(norm, view);
+    if (dot(view, norm) < 0.0) norm = reflect(norm, view);
 
-		norm1 = norm;
-		norm2 = norm;
-		norm3 = norm;
+    norm1 = norm;
+    norm2 = norm;
+    norm3 = norm;
 
-	#endif
-	
-	fixed3 sky = ReflectionColor(norm2, screenUV.xy);
+    #endif
 
-	float4 disortionUV = DisortScreenUV(norm2, screenUV, depth, dist, view);
+    fixed3 sky = ReflectionColor(norm2, screenUV.xy);
 
-	float3 worldDepthPos = WorldDepthPos(disortionUV.xy);
+    float4 disortionUV = DisortScreenUV(norm2, screenUV, depth, dist, view);
 
-	fixed3 caustics = CausticsFromAbove(disortionUV.xy, unmaskedNorm, worldPos, worldDepthPos, dist);
-	
-	fixed3 sea = OceanColorFromAbove(disortionUV, worldPos, depth, caustics);
+    float3 worldDepthPos = WorldDepthPos(disortionUV.xy);
 
-	sea += SubSurfaceScatter(view, norm1, worldPos.y);
-	
-	fixed fresnel = FresnelAirWater(view, norm3);
+    fixed3 caustics = CausticsFromAbove(disortionUV.xy, unmaskedNorm, worldPos, worldDepthPos, dist);
 
-	fixed foamAmount = FoamAmount(worldPos, foam);
-	
-	fixed3 col = fixed3(0,0,0);
-	
-	col += sky * fresnel;
-	
-	col += sea * (1.0-fresnel);
+    fixed3 sea = OceanColorFromAbove(disortionUV, worldPos, depth, caustics);
 
-	col = AddFoamColor(foamAmount, col);
+    sea += SubSurfaceScatter(view, norm1, worldPos.y);
 
-	float edgeFade = EdgeFade(screenUV.xy, view, worldPos, worldDepthPos);
-	col = ApplyEdgeFade(col, screenUV.zw, edgeFade, o.Alpha, o.LightMask);
+    fixed fresnel = FresnelAirWater(view, norm3);
 
-	o.Albedo = col;
-	o.Normal = TangentSpaceNormal(norm3);
-	o.DNormal = norm3;
-	o.Fresnel = fresnel;
-	o.Foam = foamAmount;
+    fixed foamAmount = FoamAmount(worldPos, foam);
 
+    fixed3 col = fixed3(0, 0, 0);
+
+    col += sky * fresnel;
+
+    col += sea * (1.0 - fresnel);
+
+    col = AddFoamColor(foamAmount, col);
+
+    float edgeFade = EdgeFade(screenUV.xy, view, worldPos, worldDepthPos);
+    col = ApplyEdgeFade(col, screenUV.zw, edgeFade, o.Alpha, o.LightMask);
+
+    o.Albedo = col;
+    o.Normal = TangentSpaceNormal(norm3);
+    o.DNormal = norm3;
+    o.Fresnel = fresnel;
+    o.Foam = foamAmount;
 }
 
-void OceanSurfUnder(Input IN, inout SurfaceOutputOcean o) 
+void OceanSurfUnder(Input IN, inout SurfaceOutputOcean o)
 {
+    float4 uv = IN.texUV;
+    float3 worldPos = IN.wPos.xyz;
+    float depth = IN.wPos.w;
 
-	float4 uv = IN.texUV;
-	float3 worldPos = IN.wPos.xyz;
-	float depth = IN.wPos.w;
+    float4 screenUV;
+    screenUV.xy = IN.screenUV.xy / IN.screenUV.w;
+    screenUV.zw = IN.grabUV.xy / IN.grabUV.w;
 
-	float4 screenUV;
-	screenUV.xy = IN.screenUV.xy / IN.screenUV.w;
-	screenUV.zw = IN.grabUV.xy / IN.grabUV.w;
-	
-	float4 st = WorldPosToProjectorSpace(worldPos);
-	OceanClip(st, worldPos);
-	
-	half3 norm, unmaskedNorm;
-	fixed4 foam;
-	OceanNormalAndFoam(uv, st, worldPos, norm, unmaskedNorm, foam);
-	norm.y *= -1.0;
-		
-	half3 view = normalize(_WorldSpaceCameraPos-worldPos);
-	float dist = length(_WorldSpaceCameraPos-worldPos);
+    float4 st = WorldPosToProjectorSpace(worldPos);
+    OceanClip(st, worldPos);
 
-	if (dot(view, norm) < 0.0) norm = reflect(norm, view);
+    half3 norm, unmaskedNorm;
+    fixed4 foam;
+    OceanNormalAndFoam(uv, st, worldPos, norm, unmaskedNorm, foam);
+    norm.y *= -1.0;
 
-	float4 disortionUV = DisortScreenUV(norm, screenUV, depth, dist, view);
-	
-	fixed3 sky = SkyColorFromBelow(disortionUV);
-	
-	fixed3 sea = DefaultUnderSideColor();
-	
-	float fresnel = FresnelWaterAir(view, norm);
+    half3 view = normalize(_WorldSpaceCameraPos - worldPos);
+    float dist = length(_WorldSpaceCameraPos - worldPos);
 
-	fixed foamAmount = FoamAmount(worldPos, foam);
+    if (dot(view, norm) < 0.0) norm = reflect(norm, view);
 
-	fixed3 col = fixed3(0,0,0);
-	
-	col += sea * fresnel;
-	
-	col += sky * (1.0-fresnel);
-	
-	col = AddFoamColor(foamAmount, col);
+    float4 disortionUV = DisortScreenUV(norm, screenUV, depth, dist, view);
 
-	o.Albedo = col;
-	o.Normal = TangentSpaceNormal(norm);
-	o.DNormal = norm;
-	o.Fresnel = fresnel;
-	o.Foam = foamAmount;
-	o.Alpha = 1.0;
-	o.LightMask = 0.0;
+    fixed3 sky = SkyColorFromBelow(disortionUV);
 
+    fixed3 sea = DefaultUnderSideColor();
+
+    float fresnel = FresnelWaterAir(view, norm);
+
+    fixed foamAmount = FoamAmount(worldPos, foam);
+
+    fixed3 col = fixed3(0, 0, 0);
+
+    col += sea * fresnel;
+
+    col += sky * (1.0 - fresnel);
+
+    col = AddFoamColor(foamAmount, col);
+
+    o.Albedo = col;
+    o.Normal = TangentSpaceNormal(norm);
+    o.DNormal = norm;
+    o.Fresnel = fresnel;
+    o.Foam = foamAmount;
+    o.Alpha = 1.0;
+    o.LightMask = 0.0;
 }
 
-		
+
 #endif
-
-
-
