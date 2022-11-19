@@ -1,8 +1,10 @@
 ﻿using System;
+using Razomy.Unity.Scripts.Spectrum.Buffers;
+using Razomy.Unity.Scripts.Spectrum.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Conditions
 {
   public abstract class WaveSpectrumCondition
   {

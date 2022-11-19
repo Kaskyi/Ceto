@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Overlays
 {
   /// <summary>
   ///   Extends the wave overlay base class.

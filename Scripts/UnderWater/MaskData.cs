@@ -1,7 +1,8 @@
-﻿using Ceto.Common.Unity.Utility;
+﻿using Razomy.Unity.Scripts.Common.Unity;
+using Razomy.Unity.Scripts.Ocean.CameraData;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.UnderWater
 {
   /// <summary>
   ///   Holds the mask cam and if the

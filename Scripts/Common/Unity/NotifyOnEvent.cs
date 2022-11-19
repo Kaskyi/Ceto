@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Ceto.Common.Unity.Utility
+namespace Razomy.Unity.Scripts.Common.Unity
 {
   /// <summary>
   ///   Allows a list of functions to be added to a gameobject.
@@ -74,8 +74,7 @@ namespace Ceto.Common.Unity.Utility
     /// <summary>
     /// </summary>
     private interface INotify
-    {
-    }
+    {}
 
     /// <summary>
     ///   Notification with a action.

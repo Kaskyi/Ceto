@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using Razomy.Unity.Scripts.Ocean.CameraData;
+using Razomy.Unity.Scripts.Spectrum;
+using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Utility
 {
   //[AddComponentMenu("Ceto/DisplayTexture")]
   [RequireComponent(typeof(Camera))]
@@ -39,11 +41,11 @@ namespace Ceto
 
     private void OnGUI()
     {
-      if (Ocean.Instance == null) return;
+      if (Ocean.Ocean.Instance == null) return;
 
       var cam = GetComponent<Camera>();
 
-      var data = Ocean.Instance.FindCameraData(cam);
+      var data = Ocean.Ocean.Instance.FindCameraData(cam);
 
       if (data == null) return;
 
@@ -71,9 +73,9 @@ namespace Ceto
 
     private Texture FindTexture(CameraData data, Camera cam)
     {
-      if (Ocean.Instance == null) return null;
+      if (Ocean.Ocean.Instance == null) return null;
 
-      var spectrum = Ocean.Instance.GetComponent<WaveSpectrum>();
+      var spectrum = Ocean.Ocean.Instance.GetComponent<WaveSpectrum>();
 
       switch (display)
       {

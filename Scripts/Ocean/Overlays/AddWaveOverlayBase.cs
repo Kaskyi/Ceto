@@ -3,7 +3,7 @@ using UnityEngine;
 
 #pragma warning disable 219
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Overlays
 {
   /// <summary>
   ///   Base class for the add overlay scripts.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Ceto.Common.Unity.Utility
+namespace Razomy.Unity.Scripts.Common.Unity
 {
   public class RTSettings
   {

@@ -1,4 +1,4 @@
-﻿namespace Ceto
+﻿namespace Razomy.Unity.Scripts.Spectrum.Conditions
 {
   public interface ISpectrum
   {

@@ -1,7 +1,7 @@
-﻿using Ceto.Common.Containers.Interpolation;
+﻿using Razomy.Unity.Scripts.Common.Interpolation;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Utility
 {
   public static class ShoreMaskGenerator
   {

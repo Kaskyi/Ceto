@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean
 {
   /// <summary>
   ///   Calculates the projection VP matrix and interpolation matrix.
@@ -23,6 +23,6 @@ namespace Ceto
     ///   the grid from its point of view but instead from the main
     ///   cameras view so you can see how the mesh is being projected.
     /// </summary>
-    void UpdateProjection(Camera cam, CameraData data);
+    void UpdateProjection(Camera cam, CameraData.CameraData data);
   }
 }

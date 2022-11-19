@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using Ceto.Common.Unity.Utility;
+using Razomy.Unity.Scripts.Common.Unity;
+using Razomy.Unity.Scripts.Ocean.Querys;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Overlays
 {
   /// <summary>
   ///   Manages the overlay system.

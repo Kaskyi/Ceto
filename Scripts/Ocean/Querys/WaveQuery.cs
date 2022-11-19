@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Querys
 {
   /// <summary>
   ///   Query's the ocean waves for information such

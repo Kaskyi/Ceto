@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Reflections
 {
   [AddComponentMenu("Ceto/Camera/ReflectionCameraCullingDistances")]
   [RequireComponent(typeof(Camera))]
@@ -23,9 +23,9 @@ namespace Ceto
     {
       //If ocean instance null there is no ocean in the scene or
       //it has not been enabled yet. 
-      if (Ocean.Instance == null || distances.Length != 32) return;
+      if (Ocean.Ocean.Instance == null || distances.Length != 32) return;
 
-      var data = Ocean.Instance.FindCameraData(m_camera);
+      var data = Ocean.Ocean.Instance.FindCameraData(m_camera);
 
       //If reflection data is null this camera has not rendered the ocean yet.
       if (data.reflection == null) return;

@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Ceto.Common.Containers.Interpolation;
-using Ceto.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Common.Interpolation;
+using Razomy.Unity.Scripts.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Spectrum.Buffers;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Tasks
 {
   public class FindRangeTask : ThreadedTask
   {

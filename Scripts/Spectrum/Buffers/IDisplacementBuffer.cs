@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
-using Ceto.Common.Containers.Interpolation;
+using Razomy.Unity.Scripts.Common.Interpolation;
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Ocean.Querys;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Buffers
 {
   public interface IDisplacementBuffer
   {

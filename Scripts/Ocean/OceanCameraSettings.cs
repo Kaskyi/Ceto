@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean
 {
   [AddComponentMenu("Ceto/Camera/OceanCameraSettings")]
   [RequireComponent(typeof(Camera))]

@@ -1,4 +1,4 @@
-namespace Ceto
+namespace Razomy.Unity.Scripts.UnderWater
 {
   /// <summary>
   /// </summary>

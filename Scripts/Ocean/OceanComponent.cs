@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean
 {
   /// <summary>
   ///   Base class of ocean components like wave spectrum, projected grid etc.
@@ -66,21 +66,21 @@ namespace Ceto
     /// <summary>
     ///   Called before camera renders the ocean.
     /// </summary>
-    public virtual void OceanOnPreRender(Camera cam, CameraData data)
+    public virtual void OceanOnPreRender(Camera cam, CameraData.CameraData data)
     {
     }
 
     /// <summary>
     ///   Called before camera culls the ocean.
     /// </summary>
-    public virtual void OceanOnPreCull(Camera cam, CameraData data)
+    public virtual void OceanOnPreCull(Camera cam, CameraData.CameraData data)
     {
     }
 
     /// <summary>
     ///   Called after camera renders the ocean.
     /// </summary>
-    public virtual void OceanOnPostRender(Camera cam, CameraData data)
+    public virtual void OceanOnPostRender(Camera cam, CameraData.CameraData data)
     {
     }
   }

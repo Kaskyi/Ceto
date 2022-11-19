@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Overlays
 {
   /// <summary>
   ///   Adds a jet of foam in the direction game object is facing.

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Buoyancy
 {
   /// <summary>
   ///   My hack of a buoyancy script.

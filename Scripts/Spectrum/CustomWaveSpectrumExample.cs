@@ -1,7 +1,10 @@
 using System;
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Spectrum.Conditions;
+using Razomy.Unity.Scripts.Spectrum.Tasks;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum
 {
   /// <summary>
   ///   This a example of how to add a custom spectrum to the WaveSpectrum component.
@@ -13,7 +16,7 @@ namespace Ceto
   /// </summary>
   [AddComponentMenu("Ceto/Components/CustomWaveSpectrumExample")]
   [DisallowMultipleComponent]
-  [RequireComponent(typeof(Ocean))]
+  [RequireComponent(typeof(Ocean.Ocean))]
   [RequireComponent(typeof(WaveSpectrum))]
   public class CustomWaveSpectrumExample : MonoBehaviour, ICustomWaveSpectrum
   {

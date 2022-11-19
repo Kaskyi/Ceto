@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Ceto.Common.Threading.Scheduling
+namespace Razomy.Unity.Scripts.Common.Threading.Scheduler
 {
   public interface ICoroutine
   {

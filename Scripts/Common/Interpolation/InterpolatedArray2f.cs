@@ -1,6 +1,6 @@
 using System;
 
-namespace Ceto.Common.Containers.Interpolation
+namespace Razomy.Unity.Scripts.Common.Interpolation
 {
   /// <summary>
   ///   A Interpolated 2 dimensional array.

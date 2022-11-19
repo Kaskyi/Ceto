@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Ceto.Common.Unity.Utility;
+using Razomy.Unity.Scripts.Common.Unity;
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Ocean.CameraData;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Grids
 {
   /// <summary>
   ///   Provides a mesh for the ocean using the projected grid method.
@@ -20,7 +22,7 @@ namespace Ceto
   /// </summary>
   [AddComponentMenu("Ceto/Components/ProjectedGrid")]
   [DisallowMultipleComponent]
-  [RequireComponent(typeof(Ocean))]
+  [RequireComponent(typeof(Ocean.Ocean))]
   public class ProjectedGrid : OceanComponent
   {
     private static readonly int MAX_SCREEN_WIDTH = 2048;
@@ -81,7 +83,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -140,12 +142,12 @@ namespace Ceto
         if (oceanTopSideMat != null && m_ocean.UnderWater != null &&
             m_ocean.UnderWater.depthMode == DEPTH_MODE.USE_DEPTH_BUFFER)
           if (oceanTopSideMat.shader.isSupported && oceanTopSideMat.renderQueue <= 2500)
-            Ocean.LogWarning(
+            Ocean.Ocean.LogWarning(
               "Underwater depth mode must be USE_OCEAN_DEPTH_PASS if using opaque material. Underwater effect will not look correct.");
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -170,7 +172,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -193,7 +195,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -215,7 +217,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -430,7 +432,7 @@ namespace Ceto
           var back = (int)CullMode.Back;
           var front = (int)CullMode.Front;
 
-          if (!Ocean.DISABLE_PROJECTION_FLIPPING)
+          if (!Ocean.Ocean.DISABLE_PROJECTION_FLIPPING)
           {
             var isFlipped = m_ocean.Projection.IsFlipped;
 
@@ -456,7 +458,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -517,7 +519,7 @@ namespace Ceto
           renderer.receiveShadows = receiveShadows;
           renderer.sharedMaterial = oceanTopSideMat;
           renderer.reflectionProbeUsage = reflectionProbes;
-          top.layer = LayerMask.NameToLayer(Ocean.OCEAN_LAYER);
+          top.layer = LayerMask.NameToLayer(Ocean.Ocean.OCEAN_LAYER);
           top.hideFlags = HideFlags.HideAndDontSave;
 
           //Must render reflection first or it will cause so artefacts on ocean 
@@ -549,7 +551,7 @@ namespace Ceto
           renderer.receiveShadows = receiveShadows;
           renderer.reflectionProbeUsage = reflectionProbes;
           renderer.sharedMaterial = oceanUnderSideMat;
-          under.layer = LayerMask.NameToLayer(Ocean.OCEAN_LAYER);
+          under.layer = LayerMask.NameToLayer(Ocean.Ocean.OCEAN_LAYER);
           under.hideFlags = HideFlags.HideAndDontSave;
 
           willRender.AddAction(ApplyProjection);
@@ -818,7 +820,7 @@ namespace Ceto
         uv.y *= h;
         uv.y += uy;
 
-        if (!Ocean.DISABLE_PROJECTED_GRID_BORDER)
+        if (!Ocean.Ocean.DISABLE_PROJECTED_GRID_BORDER)
         {
           //Add border. Values outside of 0-1 are verts that will be in the border.
           uv.x = uv.x * (1.0f + border * 2.0f) - border;

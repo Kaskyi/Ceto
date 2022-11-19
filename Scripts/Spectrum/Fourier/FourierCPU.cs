@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Ceto.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Common.Threading.Tasks;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Fourier
 {
   public class FourierCPU
   {

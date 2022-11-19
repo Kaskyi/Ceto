@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Ceto.Common.Threading.Scheduling;
+using Razomy.Unity.Scripts.Common.Threading.Scheduler;
 
-namespace Ceto.Common.Threading.Tasks
+namespace Razomy.Unity.Scripts.Common.Threading.Tasks
 {
   /// <summary>
   ///   A abstract task that implements the default behaviour of a task

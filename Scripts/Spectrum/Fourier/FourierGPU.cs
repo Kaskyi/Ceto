@@ -1,9 +1,9 @@
 using System;
-using Ceto.Common.Unity.Utility;
+using Razomy.Unity.Scripts.Common.Unity;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Fourier
 {
   /// <summary>
   ///   Class to perform fourier transform

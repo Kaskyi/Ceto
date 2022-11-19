@@ -1,13 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Ceto.Common.Threading.Scheduling;
-using Ceto.Common.Unity.Utility;
+using Razomy.Unity.Scripts.Common.Threading.Scheduler;
+using Razomy.Unity.Scripts.Common.Unity;
+using Razomy.Unity.Scripts.Grids;
+using Razomy.Unity.Scripts.Ocean.Overlays;
+using Razomy.Unity.Scripts.Ocean.Querys;
+using Razomy.Unity.Scripts.Reflections;
+using Razomy.Unity.Scripts.Spectrum;
 using UnityEngine;
 
 #pragma warning disable 162, 649
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean
 {
   /// <summary>
   ///   The Ocean components is responsible for managing the
@@ -200,7 +205,7 @@ namespace Ceto
     /// <summary>
     ///   Hold the data generated for each camera that renders the ocean.
     /// </summary>
-    private readonly Dictionary<Camera, CameraData> m_cameraData = new();
+    private readonly Dictionary<Camera, CameraData.CameraData> m_cameraData = new();
 
     /// <summary>
     ///   Uses this query for simple xz query's to
@@ -258,7 +263,7 @@ namespace Ceto
     /// <summary>
     ///   The component used to manage the under water effects.
     /// </summary>
-    public UnderWater UnderWater { get; set; }
+    public UnderWater.UnderWater UnderWater { get; set; }
 
     /// <summary>
     ///   The time value used to generate the waves from.
@@ -582,8 +587,8 @@ namespace Ceto
         Spectrum = component as WaveSpectrum;
       else if (component is PlanarReflection)
         Reflection = component as PlanarReflection;
-      else if (component is UnderWater)
-        UnderWater = component as UnderWater;
+      else if (component is UnderWater.UnderWater)
+        UnderWater = component as UnderWater.UnderWater;
       else
         throw new InvalidCastException("Could not cast ocean component " + component.GetType());
     }
@@ -602,7 +607,7 @@ namespace Ceto
         Spectrum = null;
       else if (component is PlanarReflection)
         Reflection = null;
-      else if (component is UnderWater)
+      else if (component is UnderWater.UnderWater)
         UnderWater = null;
       else
         throw new InvalidCastException("Could not cast ocean component " + component.GetType());
@@ -694,16 +699,16 @@ namespace Ceto
     ///   If no data exists then create new data
     ///   object and return it.
     /// </summary>
-    public CameraData FindCameraData(Camera cam)
+    public CameraData.CameraData FindCameraData(Camera cam)
     {
       if (cam == null)
         throw new InvalidOperationException("Can not find camera data for null camera");
 
-      CameraData data = null;
+      CameraData.CameraData data = null;
 
       if (!m_cameraData.TryGetValue(cam, out data))
       {
-        data = new CameraData();
+        data = new CameraData.CameraData();
         m_cameraData.Add(cam, data);
       }
 
@@ -1011,7 +1016,7 @@ namespace Ceto
         var cam = Camera.current;
 
         if (!m_cameraData.ContainsKey(cam))
-          m_cameraData.Add(cam, new CameraData());
+          m_cameraData.Add(cam, new CameraData.CameraData());
 
         var data = m_cameraData[cam];
 

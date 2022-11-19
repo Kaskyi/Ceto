@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Ocean.Querys;
+using Razomy.Unity.Scripts.Utility;
+using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.UnderWater
 {
   [AddComponentMenu("Ceto/Camera/UnderWaterPostEffect")]
   [RequireComponent(typeof(Camera))]
@@ -92,9 +95,9 @@ namespace Ceto
 
       m_underWaterIsVisible = UnderWaterIsVisible(cam);
 
-      if (controlUnderwaterMode && Ocean.Instance != null && Ocean.Instance.UnderWater is UnderWater)
+      if (controlUnderwaterMode && Ocean.Ocean.Instance != null && Ocean.Ocean.Instance.UnderWater is UnderWater)
       {
-        var underwater = Ocean.Instance.UnderWater;
+        var underwater = Ocean.Ocean.Instance.UnderWater;
 
         if (!m_underWaterIsVisible)
           underwater.underwaterMode = UNDERWATER_MODE.ABOVE_ONLY;
@@ -151,7 +154,7 @@ namespace Ceto
 
       m_material.SetMatrix("_FrustumCorners", frustumCorners);
 
-      var mulCol = Ocean.Instance.SunColor() * Mathf.Max(0.0f, Vector3.Dot(Vector3.up, Ocean.Instance.SunDir()));
+      var mulCol = Ocean.Ocean.Instance.SunColor() * Mathf.Max(0.0f, Vector3.Dot(Vector3.up, Ocean.Ocean.Instance.SunDir()));
       mulCol = Color.Lerp(Color.white, mulCol, attenuationBySun);
 
       m_material.SetColor("_MultiplyCol", mulCol);
@@ -174,13 +177,13 @@ namespace Ceto
     {
       if (underWaterPostEffectSdr == null || m_material == null || SystemInfo.graphicsShaderLevel < 30) return false;
 
-      if (Ocean.Instance == null || Ocean.Instance.UnderWater == null || Ocean.Instance.Grid == null) return false;
+      if (Ocean.Ocean.Instance == null || Ocean.Ocean.Instance.UnderWater == null || Ocean.Ocean.Instance.Grid == null) return false;
 
-      if (!Ocean.Instance.gameObject.activeInHierarchy) return false;
+      if (!Ocean.Ocean.Instance.gameObject.activeInHierarchy) return false;
 
-      if (!Ocean.Instance.UnderWater.enabled || !Ocean.Instance.Grid.enabled) return false;
+      if (!Ocean.Ocean.Instance.UnderWater.enabled || !Ocean.Ocean.Instance.Grid.enabled) return false;
 
-      if (Ocean.Instance.UnderWater.underwaterMode == UNDERWATER_MODE.ABOVE_ONLY) return false;
+      if (Ocean.Ocean.Instance.UnderWater.underwaterMode == UNDERWATER_MODE.ABOVE_ONLY) return false;
 
       if (!m_underWaterIsVisible) return false;
 
@@ -221,7 +224,7 @@ namespace Ceto
 
     private bool UnderWaterIsVisible(Camera cam)
     {
-      if (Ocean.Instance == null) return false;
+      if (Ocean.Ocean.Instance == null) return false;
 
       var pos = cam.transform.position;
 
@@ -231,13 +234,13 @@ namespace Ceto
         m_query.posZ = pos.z;
         m_query.mode = QUERY_MODE.CLIP_TEST;
 
-        Ocean.Instance.QueryWaves(m_query);
+        Ocean.Ocean.Instance.QueryWaves(m_query);
 
         if (m_query.result.isClipped)
           return false;
       }
 
-      var upperRange = Ocean.Instance.FindMaxDisplacement(true) + Ocean.Instance.level;
+      var upperRange = Ocean.Ocean.Instance.FindMaxDisplacement(true) + Ocean.Ocean.Instance.level;
 
       if (pos.y < upperRange)
         return true;

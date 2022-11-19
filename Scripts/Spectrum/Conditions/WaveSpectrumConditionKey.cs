@@ -1,6 +1,7 @@
 using System;
+using Razomy.Unity.Scripts.Ocean;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Conditions
 {
   public abstract class WaveSpectrumConditionKey : IEquatable<WaveSpectrumConditionKey>
   {

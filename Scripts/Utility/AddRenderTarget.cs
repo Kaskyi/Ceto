@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Utility
 {
   [RequireComponent(typeof(Camera))]
   public class AddRenderTarget : MonoBehaviour

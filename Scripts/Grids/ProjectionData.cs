@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Razomy.Unity.Scripts.Ocean.CameraData;
+using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Grids
 {
   /// <summary>
   ///   Projection data.

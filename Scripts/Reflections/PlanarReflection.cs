@@ -3,10 +3,12 @@
 #endif
 
 using System;
-using Ceto.Common.Unity.Utility;
+using Razomy.Unity.Scripts.Common.Unity;
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Utility;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Reflections
 {
   /// <summary>
   ///   Class to provide reflections using the planar reflection method.
@@ -17,7 +19,7 @@ namespace Ceto
   /// </summary>
   [AddComponentMenu("Ceto/Components/PlanarReflection")]
   [DisallowMultipleComponent]
-  [RequireComponent(typeof(Ocean))]
+  [RequireComponent(typeof(Ocean.Ocean))]
   public class PlanarReflection : OceanComponent
   {
     public const float MAX_REFLECTION_INTENSITY = 2.0f;
@@ -123,7 +125,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -162,7 +164,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -288,7 +290,7 @@ namespace Ceto
           m_imageBlur.BlurSpread = blurSpread;
           m_imageBlur.Blur(reflections0);
 
-          Shader.SetGlobalTexture(Ocean.REFLECTION_TEXTURE_NAME0, reflections0);
+          Shader.SetGlobalTexture(Ocean.Ocean.REFLECTION_TEXTURE_NAME0, reflections0);
         }
 
         if (reflections1 != null)
@@ -298,14 +300,14 @@ namespace Ceto
           m_imageBlur.BlurSpread = blurSpread;
           m_imageBlur.Blur(reflections1);
 
-          Shader.SetGlobalTexture(Ocean.REFLECTION_TEXTURE_NAME1, reflections1);
+          Shader.SetGlobalTexture(Ocean.Ocean.REFLECTION_TEXTURE_NAME1, reflections1);
         }
 
         data.reflection.SetViewAsUpdated(cam);
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -484,7 +486,7 @@ namespace Ceto
       reflectionCam.projectionMatrix = reflectionCam.CalculateObliqueMatrix(cameraSpaceClipPlane);
 
       reflectionCam.cullingMask = GetReflectionLayermask(settings);
-      reflectionCam.cullingMask = OceanUtility.HideLayer(reflectionCam.cullingMask, Ocean.OCEAN_LAYER);
+      reflectionCam.cullingMask = OceanUtility.HideLayer(reflectionCam.cullingMask, Ocean.Ocean.OCEAN_LAYER);
 
       var oldCulling = GL.invertCulling;
       GL.invertCulling = !oldCulling;

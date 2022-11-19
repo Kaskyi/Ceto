@@ -4,7 +4,7 @@
 
 // using UnityEngine.VR;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean
 {
   public static class OceanVR
   {

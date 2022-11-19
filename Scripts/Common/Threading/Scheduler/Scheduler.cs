@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using Ceto.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Common.Threading.Tasks;
 
-namespace Ceto.Common.Threading.Scheduling
+namespace Razomy.Unity.Scripts.Common.Threading.Scheduler
 {
   /// <summary>
   ///   Scheduler.

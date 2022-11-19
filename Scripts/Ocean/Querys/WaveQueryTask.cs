@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Ceto.Common.Containers.Interpolation;
-using Ceto.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Common.Interpolation;
+using Razomy.Unity.Scripts.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Ocean.Overlays;
+using Razomy.Unity.Scripts.Spectrum;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Querys
 {
   /// <summary>
   ///   This is the base class for the threaded and coroutine query tasks.

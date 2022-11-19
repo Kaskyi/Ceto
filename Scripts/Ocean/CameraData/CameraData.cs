@@ -1,4 +1,9 @@
-﻿namespace Ceto
+﻿using Razomy.Unity.Scripts.Grids;
+using Razomy.Unity.Scripts.Ocean.Overlays;
+using Razomy.Unity.Scripts.Reflections;
+using Razomy.Unity.Scripts.UnderWater;
+
+namespace Razomy.Unity.Scripts.Ocean.CameraData
 {
   /// <summary>
   ///   Holds all the data for a camera.

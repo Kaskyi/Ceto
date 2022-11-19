@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Ceto.Common.Unity.Utility
+namespace Razomy.Unity.Scripts.Common.Unity
 {
   public static class CBUtility
   {
