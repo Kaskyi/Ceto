@@ -1,4 +1,6 @@
-namespace Ceto
+using Razomy.Unity.Scripts.Ocean;
+
+namespace Razomy.Unity.Scripts.Spectrum.Conditions
 {
   public class PhillipsSpectrumConditionKey : WaveSpectrumConditionKey
   {

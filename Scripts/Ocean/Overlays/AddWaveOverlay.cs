@@ -2,7 +2,7 @@
 
 #pragma warning disable 219
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Overlays
 {
   /// <summary>
   ///   Provides a generic script to add any of the

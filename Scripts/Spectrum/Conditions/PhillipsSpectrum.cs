@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Razomy.Unity.Scripts.Spectrum.Tasks;
+using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Conditions
 {
   /// <summary>
   /// </summary>

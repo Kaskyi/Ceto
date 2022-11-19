@@ -1,4 +1,4 @@
-﻿namespace Ceto.Common.Threading.Tasks
+﻿namespace Razomy.Unity.Scripts.Common.Threading.Tasks
 {
   public interface ICancelToken
   {

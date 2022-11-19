@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.CameraData
 {
   /// <summary>
   ///   The base class for the ocean data classes.

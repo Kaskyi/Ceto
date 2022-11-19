@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Razomy.Unity.Scripts.Spectrum.Conditions;
+using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Buffers
 {
   /// <summary>
   ///   Base class for a spectrum buffer.

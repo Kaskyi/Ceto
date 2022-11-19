@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using Ceto.Common.Containers.Queues;
-using Ceto.Common.Threading.Scheduling;
-using Ceto.Common.Threading.Tasks;
-using Ceto.Common.Unity.Utility;
+using Razomy.Unity.Scripts.Common.Queues;
+using Razomy.Unity.Scripts.Common.Threading.Scheduler;
+using Razomy.Unity.Scripts.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Common.Unity;
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Ocean.Querys;
+using Razomy.Unity.Scripts.Spectrum.Buffers;
+using Razomy.Unity.Scripts.Spectrum.Conditions;
+using Razomy.Unity.Scripts.Spectrum.Tasks;
 using UnityEngine;
 
 #pragma warning disable 414
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum
 {
   /// <summary>
   ///   The WaveSpectrum component is responsible for
@@ -22,7 +27,7 @@ namespace Ceto
   /// </summary>
   [AddComponentMenu("Ceto/Components/WaveSpectrum")]
   [DisallowMultipleComponent]
-  [RequireComponent(typeof(Ocean))]
+  [RequireComponent(typeof(Ocean.Ocean))]
   public class WaveSpectrum : OceanComponent
   {
     //These settings have been moved to the SpectrumTask script
@@ -316,7 +321,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -373,7 +378,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -423,7 +428,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -499,13 +504,13 @@ namespace Ceto
     {
       try
       {
-        m_scheduler.DisableMultithreading = Ocean.DISABLE_ALL_MULTITHREADING;
+        m_scheduler.DisableMultithreading = Ocean.Ocean.DISABLE_ALL_MULTITHREADING;
         m_scheduler.CheckForException();
         m_scheduler.Update();
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -542,7 +547,7 @@ namespace Ceto
       //Need multiple render targets to run.
       if (!disableSlopes && SystemInfo.graphicsShaderLevel < 30)
       {
-        Ocean.LogWarning("Spectrum slopes needs at least SM3 to run. Disabling slopes.");
+        Ocean.Ocean.LogWarning("Spectrum slopes needs at least SM3 to run. Disabling slopes.");
         disableSlopes = true;
       }
 
@@ -618,7 +623,7 @@ namespace Ceto
       //Need multiple render targets to run if running on GPU
       if (!disableDisplacements && SystemInfo.graphicsShaderLevel < 30 && m_displacementBuffer.IsGPU)
       {
-        Ocean.LogWarning("Spectrum displacements needs at least SM3 to run on GPU. Disabling displacement.");
+        Ocean.Ocean.LogWarning("Spectrum displacements needs at least SM3 to run on GPU. Disabling displacement.");
         disableDisplacements = true;
       }
 
@@ -743,7 +748,7 @@ namespace Ceto
     private void ReadFromGPU(int numGrids)
     {
       if (!disableReadBack && readSdr == null)
-        Ocean.LogWarning("Trying to read GPU displacement data but the read shader is null");
+        Ocean.Ocean.LogWarning("Trying to read GPU displacement data but the read shader is null");
 
       var supportDX11 = SystemInfo.graphicsShaderLevel >= 50 && SystemInfo.supportsComputeShaders;
 
@@ -807,7 +812,7 @@ namespace Ceto
         //If using GPU and readback disabled then have to set
         //max disable to the max possible. This may cause 
         //loss of some resolution in the projected grid.
-        MaxDisplacement = new Vector2(0.0f, Ocean.MAX_SPECTRUM_WAVE_HEIGHT * gridScale);
+        MaxDisplacement = new Vector2(0.0f, Ocean.Ocean.MAX_SPECTRUM_WAVE_HEIGHT * gridScale);
       }
       else if (m_findRangeTask == null || m_findRangeTask.Done)
       {
@@ -833,7 +838,7 @@ namespace Ceto
       //need multiple render targets to run.
       if (!disableFoam && SystemInfo.graphicsShaderLevel < 30)
       {
-        Ocean.LogWarning("Spectrum foam needs at least SM3 to run. Disabling foam.");
+        Ocean.Ocean.LogWarning("Spectrum foam needs at least SM3 to run. Disabling foam.");
         disableFoam = true;
       }
 
@@ -1101,13 +1106,13 @@ namespace Ceto
 
       if (m_conditionCache.Count >= MaxConditionCacheSize)
       {
-        Ocean.LogWarning("Condition cache full. Condition not cached.");
+        Ocean.Ocean.LogWarning("Condition cache full. Condition not cached.");
         return;
       }
 
       if (!Mathf.IsPowerOfTwo(fourierSize) || fourierSize < 32 || fourierSize > 512)
       {
-        Ocean.LogWarning("Fourier size must be a pow2 number from 32 to 512. Condition not cached.");
+        Ocean.Ocean.LogWarning("Fourier size must be a pow2 number from 32 to 512. Condition not cached.");
         return;
       }
 
@@ -1150,7 +1155,7 @@ namespace Ceto
         {
           if (CustomWaveSpectrum == null)
           {
-            Ocean.LogWarning(
+            Ocean.Ocean.LogWarning(
               "Custom spectrum type selected but no custom spectrum interface has been added to the wave spectrum. Defaulting to Unified Spectrum");
             spectrumType = SPECTRUM_TYPE.UNIFIED;
             condition = new UnifiedSpectrumCondition(fourierSize, windSpeed, windDir, waveAge, numberOfGrids);
@@ -1196,7 +1201,7 @@ namespace Ceto
         {
           if (CustomWaveSpectrum == null)
           {
-            Ocean.LogWarning(
+            Ocean.Ocean.LogWarning(
               "Custom spectrum type selected but no custom spectrum interface has been added to the wave spectrum. Defaulting to Unified Spectrum");
             spectrumType = SPECTRUM_TYPE.UNIFIED;
             key = new UnifiedSpectrumConditionKey(windSpeed, waveAge, fourierSize, windDir, spectrumType,
@@ -1274,7 +1279,7 @@ namespace Ceto
 
       if (!isCpu && !disableReadBack && !supportDX11)
       {
-        Ocean.LogWarning(
+        Ocean.Ocean.LogWarning(
           "You card does not support dx11. Fourier can not be GPU. Changing to CPU. Disable read backs to use GPU but with no height querys.");
         fourierSize = FOURIER_SIZE.MEDIUM_64_CPU;
         size = 64;

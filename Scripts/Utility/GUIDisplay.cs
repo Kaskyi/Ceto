@@ -1,10 +1,15 @@
-﻿using Ceto.Common.Unity.Utility;
+﻿using Razomy.Unity.Scripts.Common.Unity;
+using Razomy.Unity.Scripts.Grids;
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Reflections;
+using Razomy.Unity.Scripts.Spectrum;
+using Razomy.Unity.Scripts.UnderWater;
 using UnityEngine;
 
 //using Ceto.Common.Unity.Utility;
 //using uSky;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Utility
 {
   public class GUIDisplay : MonoBehaviour
   {
@@ -41,15 +46,15 @@ namespace Ceto
 
     private void OnGUI()
     {
-      if (Ocean.Instance == null) return;
+      if (Ocean.Ocean.Instance == null) return;
 
       var shipCam = m_camera.GetComponent<ShipCamera>();
       var postEffect = m_camera.GetComponent<UnderWaterPostEffect>();
 
-      var spectrum = Ocean.Instance.GetComponent<WaveSpectrum>();
-      var reflection = Ocean.Instance.GetComponent<PlanarReflection>();
-      var underWater = Ocean.Instance.GetComponent<UnderWater>();
-      var grid = Ocean.Instance.GetComponent<ProjectedGrid>();
+      var spectrum = Ocean.Ocean.Instance.GetComponent<WaveSpectrum>();
+      var reflection = Ocean.Ocean.Instance.GetComponent<PlanarReflection>();
+      var underWater = Ocean.Ocean.Instance.GetComponent<UnderWater.UnderWater>();
+      var grid = Ocean.Ocean.Instance.GetComponent<ProjectedGrid>();
 
       if (true)
       {
@@ -117,13 +122,13 @@ namespace Ceto
 
       if (true)
       {
-        var windDir = Ocean.Instance.windDir;
+        var windDir = Ocean.Ocean.Instance.windDir;
 
         GUILayout.BeginHorizontal("Box");
         GUILayout.Label("Wind Direction", GUILayout.MaxWidth(m_textWidth));
         windDir = GUILayout.HorizontalSlider(windDir, 0.0f, 360.0f);
         GUILayout.EndHorizontal();
-        Ocean.Instance.windDir = windDir;
+        Ocean.Ocean.Instance.windDir = windDir;
       }
 
       /*
@@ -242,7 +247,7 @@ namespace Ceto
 
         GUILayout.BeginHorizontal("Box");
         GUILayout.Label("Refraction Intensity", GUILayout.MaxWidth(m_textWidth));
-        intensity = GUILayout.HorizontalSlider(intensity, 0.0f, UnderWater.MAX_REFRACTION_INTENSITY);
+        intensity = GUILayout.HorizontalSlider(intensity, 0.0f, UnderWater.UnderWater.MAX_REFRACTION_INTENSITY);
         GUILayout.EndHorizontal();
 
         underWater.aboveRefractionIntensity = intensity;
@@ -303,7 +308,7 @@ namespace Ceto
           @"W to move ship forward. A/D to turn.
 Left click and drag to rotate camera.
 Keypad +/- to move sun.
-Ceto Version " + Ocean.VERSION;
+Ceto Version " + Ocean.Ocean.VERSION;
 
         if (m_fps != null) info += "\nCurrent FPS = " + m_fps.FrameRate.ToString("F2");
 

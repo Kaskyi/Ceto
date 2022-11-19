@@ -1,4 +1,4 @@
-﻿namespace Ceto.Common.Unity.Utility
+﻿namespace Razomy.Unity.Scripts.Common.Unity
 {
   /// <summary>
   ///   Allows a list of functions to be added to a gameobject.

@@ -1,7 +1,7 @@
 using System.Collections;
-using Ceto.Common.Threading.Scheduling;
+using Razomy.Unity.Scripts.Common.Threading.Scheduler;
 
-namespace Ceto.Common.Threading.Tasks
+namespace Razomy.Unity.Scripts.Common.Threading.Tasks
 {
   /// <summary>
   ///   Interface for a task.

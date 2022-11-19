@@ -2,7 +2,7 @@ using UnityEngine;
 
 #pragma warning disable 219
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Overlays
 {
   /// <summary>
   ///   Allows a area of waves to be masked.

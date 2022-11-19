@@ -1,4 +1,4 @@
-﻿namespace Ceto
+﻿namespace Razomy.Unity.Scripts.Ocean
 {
   /// <summary>
   ///   Interface for getting the time value used to generate the waves.

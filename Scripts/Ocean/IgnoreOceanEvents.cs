@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean
 {
   public class IgnoreOceanEvents : MonoBehaviour
-  {
-  }
+  {}
 }

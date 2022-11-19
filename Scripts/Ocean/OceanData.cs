@@ -1,7 +1,8 @@
 using System;
+using Razomy.Unity.Scripts.Ocean.Overlays;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean
 {
   /// <summary>
   ///   This is the common settings like enum and data classes used through out Ceto.

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Ceto.Common.Unity.Utility;
+using Razomy.Unity.Scripts.Common.Unity;
+using Razomy.Unity.Scripts.Spectrum.Conditions;
+using Razomy.Unity.Scripts.Spectrum.Fourier;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Buffers
 {
   /// <summary>
   ///   A buffer that uses FFT on the GPU to transform

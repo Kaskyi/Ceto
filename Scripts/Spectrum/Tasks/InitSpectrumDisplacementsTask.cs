@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
-using Ceto.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Spectrum.Buffers;
+using Razomy.Unity.Scripts.Spectrum.Conditions;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Tasks
 {
   public class InitSpectrumDisplacementsTask : ThreadedTask
   {
@@ -141,13 +144,12 @@ namespace Ceto
       float w;
       float c, s;
 
-      var size = Size;
-      var ifsize = 1.0f / size;
+      var ifsize = 1.0f / Size;
 
       //float t = Time.realtimeSinceStartup;
 
-      for (var y = 0; y < size; y++)
-      for (var x = 0; x < size; x++)
+      for (var y = 0; y < Size; y++)
+      for (var x = 0; x < Size; x++)
       {
         if (Cancelled) return;
 
@@ -157,8 +159,8 @@ namespace Ceto
         st.x = uv.x > 0.5f ? uv.x - 1.0f : uv.x;
         st.y = uv.y > 0.5f ? uv.y - 1.0f : uv.y;
 
-        i = x + y * size;
-        j = (size - x) % size + (size - y) % size * size;
+        i = x + y * Size;
+        j = (Size - x) % Size + (Size - y) % Size * Size;
 
         s12 = m_spectrum01[i];
         s12c = m_spectrum01[j];
@@ -207,13 +209,12 @@ namespace Ceto
       Color w;
       float c, s;
 
-      var size = Size;
-      var ifsize = 1.0f / size;
+      var ifsize = 1.0f / Size;
 
       //float t = Time.realtimeSinceStartup;
 
-      for (var y = 0; y < size; y++)
-      for (var x = 0; x < size; x++)
+      for (var y = 0; y < Size; y++)
+      for (var x = 0; x < Size; x++)
       {
         if (Cancelled) return;
 
@@ -223,8 +224,8 @@ namespace Ceto
         st.x = uv.x > 0.5f ? uv.x - 1.0f : uv.x;
         st.y = uv.y > 0.5f ? uv.y - 1.0f : uv.y;
 
-        i = x + y * size;
-        j = (size - x) % size + (size - y) % size * size;
+        i = x + y * Size;
+        j = (Size - x) % Size + (Size - y) % Size * Size;
 
         s12 = m_spectrum01[i];
         s12c = m_spectrum01[j];
@@ -286,13 +287,12 @@ namespace Ceto
       Color w;
       float c, s;
 
-      var size = Size;
-      var ifsize = 1.0f / size;
+      var ifsize = 1.0f / Size;
 
       //float t = Time.realtimeSinceStartup;
 
-      for (var y = 0; y < size; y++)
-      for (var x = 0; x < size; x++)
+      for (var y = 0; y < Size; y++)
+      for (var x = 0; x < Size; x++)
       {
         if (Cancelled) return;
 
@@ -302,8 +302,8 @@ namespace Ceto
         st.x = uv.x > 0.5f ? uv.x - 1.0f : uv.x;
         st.y = uv.y > 0.5f ? uv.y - 1.0f : uv.y;
 
-        i = x + y * size;
-        j = (size - x) % size + (size - y) % size * size;
+        i = x + y * Size;
+        j = (Size - x) % Size + (Size - y) % Size * Size;
 
         s12 = m_spectrum01[i];
         s34 = m_spectrum23[i];
@@ -389,13 +389,12 @@ namespace Ceto
       Color w;
       float c, s;
 
-      var size = Size;
-      var ifsize = 1.0f / size;
+      var ifsize = 1.0f / Size;
 
       //float t = Time.realtimeSinceStartup;
 
-      for (var y = 0; y < size; y++)
-      for (var x = 0; x < size; x++)
+      for (var y = 0; y < Size; y++)
+      for (var x = 0; x < Size; x++)
       {
         if (Cancelled) return;
 
@@ -405,8 +404,8 @@ namespace Ceto
         st.x = uv.x > 0.5f ? uv.x - 1.0f : uv.x;
         st.y = uv.y > 0.5f ? uv.y - 1.0f : uv.y;
 
-        i = x + y * size;
-        j = (size - x) % size + (size - y) % size * size;
+        i = x + y * Size;
+        j = (Size - x) % Size + (Size - y) % Size * Size;
 
         s12 = m_spectrum01[i];
         s34 = m_spectrum23[i];
@@ -493,18 +492,16 @@ namespace Ceto
 
     private void CreateKTables(Vector4 inverseGridSizes)
     {
-      var size = Size;
-      var ifsize = 1.0f / size;
-      var grids = NumGrids;
+      var ifsize = 1.0f / Size;
 
-      if (grids > 0)
-        m_ktable1 = new Vector3[size * size];
-      if (grids > 1)
-        m_ktable2 = new Vector3[size * size];
-      if (grids > 2)
-        m_ktable3 = new Vector3[size * size];
-      if (grids > 3)
-        m_ktable4 = new Vector3[size * size];
+      if (NumGrids > 0)
+        m_ktable1 = new Vector3[Size * Size];
+      if (NumGrids > 1)
+        m_ktable2 = new Vector3[Size * Size];
+      if (NumGrids > 2)
+        m_ktable3 = new Vector3[Size * Size];
+      if (NumGrids > 3)
+        m_ktable4 = new Vector3[Size * Size];
 
       int i;
       Vector2 uv, st, k1, k2, k3, k4;
@@ -512,8 +509,8 @@ namespace Ceto
 
       //float t = Time.realtimeSinceStartup;
 
-      for (var y = 0; y < size; y++)
-      for (var x = 0; x < size; x++)
+      for (var y = 0; y < Size; y++)
+      for (var x = 0; x < Size; x++)
       {
         uv.x = x * ifsize;
         uv.y = y * ifsize;
@@ -521,9 +518,9 @@ namespace Ceto
         st.x = uv.x > 0.5f ? uv.x - 1.0f : uv.x;
         st.y = uv.y > 0.5f ? uv.y - 1.0f : uv.y;
 
-        i = x + y * size;
+        i = x + y * Size;
 
-        if (grids > 0)
+        if (NumGrids > 0)
         {
           k1.x = st.x * inverseGridSizes.x;
           k1.y = st.y * inverseGridSizes.x;
@@ -535,7 +532,7 @@ namespace Ceto
           m_ktable1[i].z = IK1;
         }
 
-        if (grids > 1)
+        if (NumGrids > 1)
         {
           k2.x = st.x * inverseGridSizes.y;
           k2.y = st.y * inverseGridSizes.y;
@@ -547,7 +544,7 @@ namespace Ceto
           m_ktable2[i].z = IK2;
         }
 
-        if (grids > 2)
+        if (NumGrids > 2)
         {
           k3.x = st.x * inverseGridSizes.z;
           k3.y = st.y * inverseGridSizes.z;
@@ -559,7 +556,7 @@ namespace Ceto
           m_ktable3[i].z = IK3;
         }
 
-        if (grids > 3)
+        if (NumGrids > 3)
         {
           k4.x = st.x * inverseGridSizes.w;
           k4.y = st.y * inverseGridSizes.w;

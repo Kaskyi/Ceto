@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.UnderWater
 {
   /// <summary>
   /// </summary>
@@ -153,7 +153,7 @@ namespace Ceto
         var grabID = Shader.PropertyToID("Ceto_CopyScreenTexture_Tmp");
         cmd.GetTemporaryRT(grabID, -1, -1, 0, FilterMode.Bilinear, format, RenderTextureReadWrite.Default);
         cmd.Blit(BuiltinRenderTextureType.CurrentActive, grabID);
-        cmd.SetGlobalTexture(Ocean.REFRACTION_GRAB_TEXTURE_NAME, grabID);
+        cmd.SetGlobalTexture(Ocean.Ocean.REFRACTION_GRAB_TEXTURE_NAME, grabID);
 
         CopyScreenCmd.buffer = cmd;
         CopyScreenCmd.camEvent = copyScreenEvent;
@@ -179,7 +179,7 @@ namespace Ceto
         var depthID = Shader.PropertyToID("Ceto_DepthCopyTexture_Tmp");
         cmd.GetTemporaryRT(depthID, -1, -1, 0, FilterMode.Point, format, RenderTextureReadWrite.Linear);
         cmd.Blit(BuiltinRenderTextureType.CurrentActive, depthID, CopyDepthCmd.material, 0);
-        cmd.SetGlobalTexture(Ocean.DEPTH_GRAB_TEXTURE_NAME, depthID);
+        cmd.SetGlobalTexture(Ocean.Ocean.DEPTH_GRAB_TEXTURE_NAME, depthID);
 
         CopyDepthCmd.buffer = cmd;
         CopyDepthCmd.camEvent = copyDepthEvent;
@@ -203,7 +203,7 @@ namespace Ceto
         var normalFadeID = Shader.PropertyToID("Ceto_NormalFadeTexture_Tmp");
         cmd.GetTemporaryRT(normalFadeID, -1, -1, 0, FilterMode.Bilinear, format, RenderTextureReadWrite.Linear);
         cmd.Blit(BuiltinRenderTextureType.CurrentActive, normalFadeID, NormalFadeCmd.material, normalFadePass);
-        cmd.SetGlobalTexture(Ocean.NORMAL_FADE_TEXTURE_NAME, normalFadeID);
+        cmd.SetGlobalTexture(Ocean.Ocean.NORMAL_FADE_TEXTURE_NAME, normalFadeID);
 
         NormalFadeCmd.buffer = cmd;
         NormalFadeCmd.camEvent = normalFadeEvent;

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Ceto.Common.Containers.Interpolation;
-using Ceto.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Common.Interpolation;
+using Razomy.Unity.Scripts.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Ocean.Querys;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Buffers
 {
   public static class QueryDisplacements
   {
@@ -44,8 +46,8 @@ namespace Ceto
         query.result.iterations = 0;
         query.result.error = 0.0f;
 
-        query.result.height = Mathf.Clamp(query.result.height, -Ocean.MAX_SPECTRUM_WAVE_HEIGHT,
-          Ocean.MAX_SPECTRUM_WAVE_HEIGHT);
+        query.result.height = Mathf.Clamp(query.result.height, -Ocean.Ocean.MAX_SPECTRUM_WAVE_HEIGHT,
+          Ocean.Ocean.MAX_SPECTRUM_WAVE_HEIGHT);
       }
       else
       {
@@ -95,8 +97,8 @@ namespace Ceto
         query.result.iterations = i;
         query.result.error = error;
 
-        query.result.height = Mathf.Clamp(query.result.height, -Ocean.MAX_SPECTRUM_WAVE_HEIGHT,
-          Ocean.MAX_SPECTRUM_WAVE_HEIGHT);
+        query.result.height = Mathf.Clamp(query.result.height, -Ocean.Ocean.MAX_SPECTRUM_WAVE_HEIGHT,
+          Ocean.Ocean.MAX_SPECTRUM_WAVE_HEIGHT);
       }
     }
 

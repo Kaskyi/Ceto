@@ -1,7 +1,8 @@
-﻿using Ceto.Common.Unity.Utility;
+﻿using Razomy.Unity.Scripts.Common.Unity;
+using Razomy.Unity.Scripts.Ocean.CameraData;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Reflections
 {
   /// <summary>
   ///   Holds the reflection cam and if the

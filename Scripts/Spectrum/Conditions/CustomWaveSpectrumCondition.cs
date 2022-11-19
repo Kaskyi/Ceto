@@ -1,6 +1,8 @@
 using System;
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Spectrum.Tasks;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Conditions
 {
   public class CustomWaveSpectrumCondition : WaveSpectrumCondition
   {

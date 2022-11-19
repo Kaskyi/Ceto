@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
-using Ceto.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Common.Threading.Tasks;
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Spectrum.Conditions;
 using UnityEngine;
 using Random = System.Random;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Tasks
 {
   /// <summary>
   /// </summary>
@@ -149,10 +151,8 @@ namespace Ceto
     /// </summary>
     private void GenerateWavesSpectrum()
     {
-      var size = Size;
-      var hsize = size / 2;
-      float fsize = size;
-      var grids = NumGrids;
+      var hsize = Size / 2;
+      float fsize = Size;
       int idx;
       float i, j;
 
@@ -179,16 +179,16 @@ namespace Ceto
       var ampz = WaveAmps.z;
       var ampw = WaveAmps.w;
 
-      for (var y = 0; y < size; y++)
-      for (var x = 0; x < size; x++)
+      for (var y = 0; y < Size; y++)
+      for (var x = 0; x < Size; x++)
       {
         if (Cancelled) return;
 
-        idx = x + y * size;
+        idx = x + y * Size;
         i = x >= hsize ? x - fsize : x;
         j = y >= hsize ? y - fsize : y;
 
-        if (grids > 0)
+        if (NumGrids > 0)
         {
           phi = RandomNumber() * PI_2;
           sample.x = GetSpectrumSample(i, j, dkx, PI_GRID_X, ampx, m_spectrums[0]);
@@ -196,7 +196,7 @@ namespace Ceto
           m_spectrum01[idx].g = sample.x * Mathf.Sin(phi) * sqrt2;
         }
 
-        if (grids > 1)
+        if (NumGrids > 1)
         {
           phi = RandomNumber() * PI_2;
           sample.y = GetSpectrumSample(i, j, dky, PI_GRID_SIZE_X, ampy, m_spectrums[1]);
@@ -204,7 +204,7 @@ namespace Ceto
           m_spectrum01[idx].a = sample.y * Mathf.Sin(phi) * sqrt2;
         }
 
-        if (grids > 2)
+        if (NumGrids > 2)
         {
           phi = RandomNumber() * PI_2;
           sample.z = GetSpectrumSample(i, j, dkz, PI_GRID_SIZE_Y, ampz, m_spectrums[2]);
@@ -212,7 +212,7 @@ namespace Ceto
           m_spectrum23[idx].g = sample.z * Mathf.Sin(phi) * sqrt2;
         }
 
-        if (grids > 3)
+        if (NumGrids > 3)
         {
           phi = RandomNumber() * PI_2;
           sample.w = GetSpectrumSample(i, j, dkw, PI_GRID_SIZE_Z, ampw, m_spectrums[3]);
@@ -229,10 +229,8 @@ namespace Ceto
     private void CreateWTable()
     {
       int i;
-      var size = Size;
-      float fsize = size;
+      float fsize = Size;
       var isize = 1.0f / fsize;
-      var grids = NumGrids;
 
       Vector4 inverseGridSizes2;
       inverseGridSizes2.x = InverseGridSizes.x * InverseGridSizes.x;
@@ -247,12 +245,12 @@ namespace Ceto
 
       //float t = Time.realtimeSinceStartup;
 
-      for (var y = 0; y < size; y++)
-      for (var x = 0; x < size; x++)
+      for (var y = 0; y < Size; y++)
+      for (var x = 0; x < Size; x++)
       {
         if (Cancelled) return;
 
-        i = x + y * size;
+        i = x + y * Size;
 
         uv.x = x * isize;
         uv.y = y * isize;
@@ -263,28 +261,28 @@ namespace Ceto
         st2.x = st.x * st.x;
         st2.y = st.y * st.y;
 
-        if (grids > 0)
+        if (NumGrids > 0)
         {
           k1 = Mathf.Sqrt(st2.x * inverseGridSizes2.x + st2.y * inverseGridSizes2.x);
           w1 = Mathf.Sqrt(GRAVITY * k1 * (1.0f + k1 * k1 / WAVE_KM_2));
           m_wtable[i].r = w1;
         }
 
-        if (grids > 1)
+        if (NumGrids > 1)
         {
           k2 = Mathf.Sqrt(st2.x * inverseGridSizes2.y + st2.y * inverseGridSizes2.y);
           w2 = Mathf.Sqrt(GRAVITY * k2 * (1.0f + k2 * k2 / WAVE_KM_2));
           m_wtable[i].g = w2;
         }
 
-        if (grids > 2)
+        if (NumGrids > 2)
         {
           k3 = Mathf.Sqrt(st2.x * inverseGridSizes2.z + st2.y * inverseGridSizes2.z);
           w3 = Mathf.Sqrt(GRAVITY * k3 * (1.0f + k3 * k3 / WAVE_KM_2));
           m_wtable[i].b = w3;
         }
 
-        if (grids > 3)
+        if (NumGrids > 3)
         {
           k4 = Mathf.Sqrt(st2.x * inverseGridSizes2.w + st2.y * inverseGridSizes2.w);
           w4 = Mathf.Sqrt(GRAVITY * k4 * (1.0f + k4 * k4 / WAVE_KM_2));

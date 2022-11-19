@@ -1,6 +1,8 @@
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Spectrum.Conditions;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum
 {
   //See the CustomWaveSpectrumExample script for a example of how to implement this.
   public interface ICustomWaveSpectrum

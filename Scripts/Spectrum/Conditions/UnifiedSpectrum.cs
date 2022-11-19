@@ -1,7 +1,8 @@
 ﻿using System;
+using Razomy.Unity.Scripts.Spectrum.Tasks;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Conditions
 {
   /// <summary>
   ///   Generates a wave spectrum using the formula in the follow research paper.

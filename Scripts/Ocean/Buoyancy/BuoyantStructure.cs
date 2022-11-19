@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Buoyancy
 {
   [AddComponentMenu("Ceto/Buoyancy/BuoyantStructure")]
   public class BuoyantStructure : MonoBehaviour

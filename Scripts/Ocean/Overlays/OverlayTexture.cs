@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Overlays
 {
   [Serializable]
   public class OverlayFoamTexture

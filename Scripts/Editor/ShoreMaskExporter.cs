@@ -2,11 +2,12 @@
 
 using System;
 using System.IO;
-using Ceto.Common.Containers.Interpolation;
+using Razomy.Unity.Scripts.Common.Interpolation;
+using Razomy.Unity.Scripts.Utility;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Editor
 {
   /// <summary>
   ///   Editor window to export the shore masks from a terrain.
@@ -122,7 +123,7 @@ namespace Ceto
         var msg = string.Format(
           "{0:MM/dd/yy H:mm:ss zzz} - No object was selected. Please select the terrain in the scene. The shore mask will not be created.",
           DateTime.Now);
-        Ocean.LogInfo(msg);
+        Ocean.Ocean.LogInfo(msg);
         return;
       }
 
@@ -134,7 +135,7 @@ namespace Ceto
         var msg = string.Format(
           "{0:MM/dd/yy H:mm:ss zzz} - Selected object was not a terrain. The shore mask will not be created.",
           DateTime.Now);
-        Ocean.LogInfo(msg);
+        Ocean.Ocean.LogInfo(msg);
         return;
       }
 
@@ -143,7 +144,7 @@ namespace Ceto
       {
         var msg = string.Format("{0:MM/dd/yy H:mm:ss zzz} - Terrains data is null. The shore mask will not be created.",
           DateTime.Now);
-        Ocean.LogInfo(msg);
+        Ocean.Ocean.LogInfo(msg);
         return;
       }
 
@@ -231,7 +232,7 @@ namespace Ceto
         var msg = string.Format(
           "{0:MM/dd/yy H:mm:ss zzz} - Failed to modify texture settings after creation. You will need to manually adjust texture settings.",
           DateTime.Now);
-        Ocean.LogInfo(msg);
+        Ocean.Ocean.LogInfo(msg);
       }
     }
   }

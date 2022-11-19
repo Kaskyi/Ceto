@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Buoyancy
 {
   /// <summary>
   ///   This just makes the objects origin y height match wave height.

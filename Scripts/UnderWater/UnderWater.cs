@@ -3,20 +3,21 @@
 #endif
 
 using System;
-using Ceto.Common.Unity.Utility;
+using Razomy.Unity.Scripts.Common.Unity;
+using Razomy.Unity.Scripts.Ocean;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 #pragma warning disable 649
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.UnderWater
 {
   /// <summary>
   ///   Handles the under water settings
   /// </summary>
   [AddComponentMenu("Ceto/Components/UnderWater")]
   [DisallowMultipleComponent]
-  [RequireComponent(typeof(Ocean))]
+  [RequireComponent(typeof(Ocean.Ocean))]
   public class UnderWater : OceanComponent
   {
     public const float MAX_REFRACTION_INTENSITY = 2.0f;
@@ -195,7 +196,7 @@ namespace Ceto
         willRender.AddAction(m_ocean.RenderOceanMask);
         willRender.AddAction(m_ocean.RenderOceanDepth);
 
-        m_bottomMask.layer = LayerMask.NameToLayer(Ocean.OCEAN_LAYER);
+        m_bottomMask.layer = LayerMask.NameToLayer(Ocean.Ocean.OCEAN_LAYER);
         m_bottomMask.hideFlags = HideFlags.HideAndDontSave;
 
         UpdateBottomBounds();
@@ -204,7 +205,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -313,7 +314,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -331,7 +332,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -349,7 +350,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -370,7 +371,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -492,8 +493,8 @@ namespace Ceto
           //Scene camera should never need the mask so just bind something that wont cause a issue.
           //If the camera is not using a post effect there is no need for the mask to be rendered.
 
-          Shader.SetGlobalTexture(Ocean.OCEAN_MASK_TEXTURE_NAME0, Texture2D.blackTexture);
-          Shader.SetGlobalTexture(Ocean.OCEAN_MASK_TEXTURE_NAME1, Texture2D.blackTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.OCEAN_MASK_TEXTURE_NAME0, Texture2D.blackTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.OCEAN_MASK_TEXTURE_NAME1, Texture2D.blackTexture);
           data.mask.SetViewAsUpdated(cam);
         }
         else
@@ -513,7 +514,7 @@ namespace Ceto
             Shader.DisableKeyword("CETO_STERO_CAMERA");
             RenderOceanMask(data.mask, data.mask.target0, cam.transform.position, cam.transform.rotation,
               cam.projectionMatrix, sdr);
-            Shader.SetGlobalTexture(Ocean.OCEAN_MASK_TEXTURE_NAME0, data.mask.target0);
+            Shader.SetGlobalTexture(Ocean.Ocean.OCEAN_MASK_TEXTURE_NAME0, data.mask.target0);
           }
 
           data.mask.SetViewAsUpdated(cam);
@@ -521,7 +522,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -562,7 +563,7 @@ namespace Ceto
 #else
       Shader.DisableKeyword("CETO_STERO_CAMERA");
       RenderOceanMask(data, data.target0, cam.transform.position, cam.transform.rotation, cam.projectionMatrix, sdr);
-      Shader.SetGlobalTexture(Ocean.OCEAN_MASK_TEXTURE_NAME0, data.target0);
+      Shader.SetGlobalTexture(Ocean.Ocean.OCEAN_MASK_TEXTURE_NAME0, data.target0);
 #endif
     }
 
@@ -623,10 +624,10 @@ namespace Ceto
         if ( /*cam.name == "SceneCamera" ||*/ SystemInfo.graphicsShaderLevel < 30)
         {
           //These texture will not be generated so zero to some that will not cause a issue if sampled.
-          Shader.SetGlobalTexture(Ocean.OCEAN_DEPTH_TEXTURE_NAME0, Texture2D.whiteTexture);
-          Shader.SetGlobalTexture(Ocean.OCEAN_DEPTH_TEXTURE_NAME1, Texture2D.whiteTexture);
-          Shader.SetGlobalTexture(Ocean.DEPTH_GRAB_TEXTURE_NAME, Texture2D.whiteTexture);
-          Shader.SetGlobalTexture(Ocean.NORMAL_FADE_TEXTURE_NAME, Texture2D.blackTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.OCEAN_DEPTH_TEXTURE_NAME0, Texture2D.whiteTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.OCEAN_DEPTH_TEXTURE_NAME1, Texture2D.whiteTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.DEPTH_GRAB_TEXTURE_NAME, Texture2D.whiteTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.NORMAL_FADE_TEXTURE_NAME, Texture2D.blackTexture);
 
           //If not using the ocean depths all thats needed is the IVP
           //to extract the world pos from the depth buffer.
@@ -637,8 +638,8 @@ namespace Ceto
         else if (depthMode == DEPTH_MODE.USE_DEPTH_BUFFER)
         {
           //These texture will not be generated so zero to some that will not cause a issue if sampled.
-          Shader.SetGlobalTexture(Ocean.OCEAN_DEPTH_TEXTURE_NAME0, Texture2D.whiteTexture);
-          Shader.SetGlobalTexture(Ocean.OCEAN_DEPTH_TEXTURE_NAME1, Texture2D.whiteTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.OCEAN_DEPTH_TEXTURE_NAME0, Texture2D.whiteTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.OCEAN_DEPTH_TEXTURE_NAME1, Texture2D.whiteTexture);
 
           //Cam must have depth mode enabled to use depth buffer.
           cam.depthTextureMode |= DepthTextureMode.Depth;
@@ -655,14 +656,14 @@ namespace Ceto
         else if (depthMode == DEPTH_MODE.USE_OCEAN_DEPTH_PASS)
         {
           //These texture will not be generated so zero to some that will not cause a issue if sampled.
-          Shader.SetGlobalTexture(Ocean.DEPTH_GRAB_TEXTURE_NAME, Texture2D.whiteTexture);
-          Shader.SetGlobalTexture(Ocean.NORMAL_FADE_TEXTURE_NAME, Texture2D.blackTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.DEPTH_GRAB_TEXTURE_NAME, Texture2D.whiteTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.NORMAL_FADE_TEXTURE_NAME, Texture2D.blackTexture);
 
           CreateDepthCameraFor(cam, data.depth);
           CreateRefractionCommand(cam, data.depth);
 
           data.depth.cam.cullingMask = GetOceanDepthsLayermask(data.settings);
-          data.depth.cam.cullingMask = OceanUtility.HideLayer(data.depth.cam.cullingMask, Ocean.OCEAN_LAYER);
+          data.depth.cam.cullingMask = OceanUtility.HideLayer(data.depth.cam.cullingMask, Ocean.Ocean.OCEAN_LAYER);
 
           if (cam.stereoEnabled)
           {
@@ -673,7 +674,7 @@ namespace Ceto
             Shader.DisableKeyword("CETO_STERO_CAMERA");
             RenderOceanDepth(data.depth, data.depth.target0, cam.transform.position, cam.transform.rotation,
               cam.projectionMatrix);
-            Shader.SetGlobalTexture(Ocean.OCEAN_DEPTH_TEXTURE_NAME0, data.depth.target0);
+            Shader.SetGlobalTexture(Ocean.Ocean.OCEAN_DEPTH_TEXTURE_NAME0, data.depth.target0);
           }
 
           data.depth.SetViewAsUpdated(cam);
@@ -681,7 +682,7 @@ namespace Ceto
       }
       catch (Exception e)
       {
-        Ocean.LogError(e.ToString());
+        Ocean.Ocean.LogError(e.ToString());
         WasError = true;
         enabled = false;
       }
@@ -775,7 +776,7 @@ namespace Ceto
 #else
       Shader.DisableKeyword("CETO_STERO_CAMERA");
       RenderOceanDepth(data, data.target0, cam.transform.position, cam.transform.rotation, cam.projectionMatrix);
-      Shader.SetGlobalTexture(Ocean.OCEAN_DEPTH_TEXTURE_NAME0, data.target0);
+      Shader.SetGlobalTexture(Ocean.Ocean.OCEAN_DEPTH_TEXTURE_NAME0, data.target0);
 #endif
     }
 
@@ -819,7 +820,7 @@ namespace Ceto
 
         data.cam.clearFlags = CameraClearFlags.SolidColor;
         data.cam.backgroundColor = new Color(0, 1, 0, 0); //Need to clear r to 0 and g to 1
-        data.cam.cullingMask = 1 << LayerMask.NameToLayer(Ocean.OCEAN_LAYER);
+        data.cam.cullingMask = 1 << LayerMask.NameToLayer(Ocean.Ocean.OCEAN_LAYER);
         data.cam.enabled = false;
         data.cam.renderingPath = RenderingPath.Forward;
         data.cam.targetTexture = null;
@@ -949,10 +950,10 @@ namespace Ceto
 
         //If commands has been disabled this frame then zeo texture.
         if (!data.refractionCommand.DisableCopyDepthCmd && DisableCopyDepthCmd)
-          Shader.SetGlobalTexture(Ocean.DEPTH_GRAB_TEXTURE_NAME, Texture2D.whiteTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.DEPTH_GRAB_TEXTURE_NAME, Texture2D.whiteTexture);
 
         if (!data.refractionCommand.DisableNormalFadeCmd && DisableNormalFadeCmd)
-          Shader.SetGlobalTexture(Ocean.NORMAL_FADE_TEXTURE_NAME, Texture2D.blackTexture);
+          Shader.SetGlobalTexture(Ocean.Ocean.NORMAL_FADE_TEXTURE_NAME, Texture2D.blackTexture);
 
         data.refractionCommand.DisableCopyDepthCmd = DisableCopyDepthCmd;
         data.refractionCommand.DisableNormalFadeCmd = DisableNormalFadeCmd;

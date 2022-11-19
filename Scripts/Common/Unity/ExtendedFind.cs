@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Ceto.Common.Unity.Utility
+namespace Razomy.Unity.Scripts.Common.Unity
 {
   /// <summary>
   ///   Extended find methods for getting components and interfaces from game objects.

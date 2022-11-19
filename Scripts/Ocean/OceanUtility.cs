@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean
 {
   /// <summary>
   ///   Utility functions that dont fit else were.

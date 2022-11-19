@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Ceto.Common.Threading.Scheduling;
+using Razomy.Unity.Scripts.Common.Threading.Scheduler;
+using Razomy.Unity.Scripts.Spectrum.Conditions;
+using Razomy.Unity.Scripts.Spectrum.Fourier;
+using Razomy.Unity.Scripts.Spectrum.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 #pragma warning disable 162, 429
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Buffers
 {
   /// <summary>
   ///   A buffer that uses FFT on the CPU to transform
@@ -279,7 +282,7 @@ namespace Ceto
       Initilize(condition, time);
 
       //Must run init task first if mutithreading disabled
-      if (Ocean.DISABLE_FOURIER_MULTITHREADING)
+      if (Ocean.Ocean.DISABLE_FOURIER_MULTITHREADING)
       {
         //Multithreading disabled, run now on this thread.
         m_initTask.Start();
@@ -306,7 +309,7 @@ namespace Ceto
         if (task.Done)
           throw new InvalidOperationException("Fourier task should not be done before running");
 
-        if (Ocean.DISABLE_FOURIER_MULTITHREADING)
+        if (Ocean.Ocean.DISABLE_FOURIER_MULTITHREADING)
         {
           //Multithreading disabled, run now on this thread.
           task.Start();
@@ -328,7 +331,7 @@ namespace Ceto
       //Debug.Log("Run Fourier time = " + (Time.realtimeSinceStartup - t) * 1000.0f + " tasks = " + m_fourierTasks.Count);
 
       //Must run init task last if mutithreading not disabled
-      if (!Ocean.DISABLE_FOURIER_MULTITHREADING)
+      if (!Ocean.Ocean.DISABLE_FOURIER_MULTITHREADING)
       {
         //Must run init task after tasks the are waiting
         //have been added. Otherwise init task may finish

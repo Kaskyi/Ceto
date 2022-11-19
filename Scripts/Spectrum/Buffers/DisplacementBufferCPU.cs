@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
-using Ceto.Common.Containers.Interpolation;
-using Ceto.Common.Threading.Scheduling;
+using Razomy.Unity.Scripts.Common.Interpolation;
+using Razomy.Unity.Scripts.Common.Threading.Scheduler;
+using Razomy.Unity.Scripts.Ocean;
+using Razomy.Unity.Scripts.Ocean.Querys;
+using Razomy.Unity.Scripts.Spectrum.Conditions;
 using UnityEngine;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Spectrum.Buffers
 {
   public class DisplacementBufferCPU : WaveSpectrumBufferCPU, IDisplacementBuffer
   {

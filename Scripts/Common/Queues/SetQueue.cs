@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Ceto.Common.Containers.Queues
+namespace Razomy.Unity.Scripts.Common.Queues
 {
   /// <summary>
   ///   Custom container that allows items to be looked up with a key like a

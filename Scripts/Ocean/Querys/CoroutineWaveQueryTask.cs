@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Razomy.Unity.Scripts.Spectrum.Buffers;
 
-namespace Ceto
+namespace Razomy.Unity.Scripts.Ocean.Querys
 {
   /// <summary>
   ///   This task will run a batch of querys on the main thread but
